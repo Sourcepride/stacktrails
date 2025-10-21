@@ -13,11 +13,10 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8082/:path*", // backend
+        destination: `${backendURL}/:path*`,
       },
     ];
   },
-
   images: {
     remotePatterns: [
       {
