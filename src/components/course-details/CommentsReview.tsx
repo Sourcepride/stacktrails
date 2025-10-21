@@ -2,6 +2,7 @@
 
 import Comment from "@/common/comment/Comment";
 import CreateComment from "@/common/comment/CreateComment";
+import CreateReview from "@/common/comment/CreateReview";
 import ReviewComponent from "@/common/comment/ReviewComponent";
 import LoadingComponent from "@/common/utils/LoadingComponent";
 import { cacheKeys } from "@/lib/cacheKeys";
@@ -111,6 +112,7 @@ const CommentsReview: React.FC<CommentsReviewProps> = ({ courseId }) => {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0} hideContent>
+          <CreateReview courseId={courseId} />
           <LoadingComponent
             loading={false}
             empty={reviewData.pages[0].total < 1}
@@ -141,11 +143,11 @@ const CommentsReview: React.FC<CommentsReviewProps> = ({ courseId }) => {
           </LoadingComponent>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
+          <CreateComment courseId={courseId} />
           <LoadingComponent
             loading={false}
             empty={commentData.pages[0].total < 1}
           >
-            <CreateComment courseId={courseId} />
             <div className="w-full space-y-4">
               {commentData.pages.map((page, i) => (
                 <div key={"page_comment__" + i} className="">

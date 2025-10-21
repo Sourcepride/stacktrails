@@ -33,7 +33,7 @@ const ListCourse: React.FC<Props> = ({ params }) => {
         {data.pages.map((page, i) => (
           <div
             key={"page__" + i}
-            className="w-full grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(260px,1fr))]"
+            className="w-full grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))]"
           >
             {page.items.map((course: Course) => (
               <CourseCard key={course.id} course={course} />

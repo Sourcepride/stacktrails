@@ -1,4 +1,4 @@
-import { BsBell } from "react-icons/bs";
+import { BsBell } from "@react-icons/all-files/bs/BsBell";
 import NotificationArray from "./NotificationArray";
 
 type AppNotificationProps = {};

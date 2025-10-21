@@ -4,11 +4,12 @@ import { useWindowWidth } from "@/hooks/useWindowWidth";
 import { Link, usePathname } from "@/i18n/navigation";
 import { AppRoutes } from "@/routes";
 import { useAppStore } from "@/store";
+import { BsBackpack2Fill } from "@react-icons/all-files/bs/BsBackpack2Fill";
+import { BsPassportFill } from "@react-icons/all-files/bs/BsPassportFill";
+import { GiScrollQuill } from "@react-icons/all-files/gi/GiScrollQuill";
+import { MdDashboard } from "@react-icons/all-files/md/MdDashboard";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { BsBackpack2Fill, BsPassportFill } from "react-icons/bs";
-import { GiScrollQuill } from "react-icons/gi";
-import { MdDashboard } from "react-icons/md";
 
 type AppSideBarProps = {};
 

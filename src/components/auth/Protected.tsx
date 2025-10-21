@@ -17,7 +17,7 @@ export default function Protected({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!user && !isLoading) {
-      router.replace(PublicRoutes.LOGIN); // use replace so user can't go back
+      router.replace(PublicRoutes.LOGIN + `?next=${location.href}`); // use replace so user can't go back
     }
   }, [user, router, isLoading]);
 

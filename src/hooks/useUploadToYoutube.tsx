@@ -1,3 +1,5 @@
+import { appFetch } from "@/lib/appFetch";
+import { BackendRoutes } from "@/routes";
 import { useUploads } from "./useUploads";
 
 // ==============================
@@ -22,6 +24,7 @@ interface FileWithMeta {
 
 type UploadJob = {
   id: string;
+  name?: string;
   type: "google_drive" | "youtube" | "dropbox";
   status: "pending" | "uploading" | "completed" | "failed";
   progress: number;
@@ -166,9 +169,7 @@ async function batchUploadYouTube(
   filesMeta: FileWithMeta[],
   concurrency = 2
 ) {
-  let accessToken = await fetch("/token/google")
-    .then((r) => r.json())
-    .then((d) => d.access_token);
+  let accessToken = await getFreshAccessToken();
 
   const results: any[] = [];
   let i = 0;
@@ -176,7 +177,11 @@ async function batchUploadYouTube(
   async function worker() {
     while (i < filesMeta.length) {
       const { file, metadata } = filesMeta[i++];
-      const jobId = ctx.addJob({ id: crypto.randomUUID(), type: "youtube" });
+      const jobId = ctx.addJob({
+        id: crypto.randomUUID(),
+        type: "youtube",
+        name: file.name ?? "youtube_no_name",
+      });
 
       try {
         let result;
@@ -190,9 +195,7 @@ async function batchUploadYouTube(
           );
         } catch (err: any) {
           if (err.message.includes("401")) {
-            accessToken = await fetch("/token/google")
-              .then((r) => r.json())
-              .then((d) => d.access_token);
+            accessToken = await getFreshAccessToken();
 
             result = await uploadOneYouTubeVideo(
               ctx,
@@ -219,4 +222,12 @@ async function batchUploadYouTube(
 
   await Promise.all(Array.from({ length: concurrency }, worker));
   return results;
+}
+
+async function getFreshAccessToken() {
+  const { data } = await appFetch<ShortLivedToken>(
+    BackendRoutes.GOOGLE_SHORT_LIVED
+  );
+
+  return data.access_token;
 }

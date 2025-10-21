@@ -37,7 +37,7 @@ const OneFileFieldWrapper = ({
           className={`absolute left-0 top-0 z-50 h-full w-full cursor-pointer opacity-0 ${inputHtmlProps?.className}`}
         />
         {typeof children === "function"
-          ? (children as Function)(getSrcProps(src))
+          ? (children as any)(getSrcProps(src))
           : children}
       </div>
       <ErrorMessage message={errorMessage} />
@@ -48,7 +48,7 @@ const OneFileFieldWrapper = ({
 export default OneFileFieldWrapper;
 
 function getSrcProps(
-  src: string | File | FileList | null | undefined,
+  src: string | File | FileList | null | undefined
 ): currentFileInfoType {
   if (!src) {
     return { src: undefined, isFile: false, rawFile: undefined };

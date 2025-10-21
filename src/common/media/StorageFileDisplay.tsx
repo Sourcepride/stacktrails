@@ -8,14 +8,18 @@ import {
 import { BackendRoutes } from "@/routes";
 import { useAppStore } from "@/store";
 import { CircularProgress, Modal, Tooltip } from "@mui/material";
+import { BsArrowLeft } from "@react-icons/all-files/bs/BsArrowLeft";
+import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
+import { GrStorage } from "@react-icons/all-files/gr/GrStorage";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
+import { IoGrid } from "@react-icons/all-files/io5/IoGrid";
+import { IoList } from "@react-icons/all-files/io5/IoList";
 import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { BsArrowLeft } from "react-icons/bs";
-import { FaPlus } from "react-icons/fa";
-import { GrStorage } from "react-icons/gr";
-import { IoClose, IoGrid, IoList } from "react-icons/io5";
+import Empty from "../utils/Empty";
 import LoadingComponent from "../utils/LoadingComponent";
 
 type mime_ = "image" | "document" | "video" | "folder";
@@ -107,7 +111,7 @@ const StorageFileDisplay: React.FC<StorageFileDisplayProps> = ({
             <button
               type={"button"}
               className="bg-red-400 rounded-full p-1"
-              onClick={close}
+              onClick={onClose}
             >
               <IoClose />
             </button>
@@ -138,6 +142,7 @@ const ICON_MAP = {
 };
 
 function ListFiles() {
+  const t = useTranslations();
   const [folderHistory, setFolderHistory] = useState<string[]>([]);
   const {
     validStorages,
@@ -148,11 +153,10 @@ function ListFiles() {
     setViewStyle,
     mimeType: _mimeType,
   } = useContext(StorageContext);
-
   const currentFolder = folderHistory[folderHistory.length - 1] ?? "";
 
   const mimeType = _mimeType === "folder" ? "document" : _mimeType;
-  const { data, status } = useQuery({
+  const { data, status, error } = useQuery({
     queryKey: [cacheKeys.LIST_FOLDER_SUB_ITEMS, provider, currentFolder],
     queryFn: async () =>
       await listSubFolderAndFiles({
@@ -164,6 +168,18 @@ function ListFiles() {
       }),
     enabled: !!validStorages.find((v) => v === provider),
   });
+
+  useEffect(() => {
+    if (status === "error") {
+      const err = error as AxiosError;
+      if (
+        err.response &&
+        (err.response.data as any)?.detail?.error === "invalid_grant"
+      ) {
+        authRedirect(provider as DocumentPlatform);
+      }
+    }
+  }, [status]);
 
   const onClick = (file: FileResp) => {
     if (_mimeType === "folder" && file.type === "folder") {
@@ -213,12 +229,19 @@ function ListFiles() {
           )}
         </div>
       </div>
+
+      {_mimeType !== "folder" && (
+        <div className="text-xs text-center py-1  text-orange-500">
+          {t("UPLOAD.PUBLIC_WARNING")}
+        </div>
+      )}
       <LoadingComponent
         loading={status === "pending"}
         data={data}
         empty={data && data.length < 1}
         error={status === "error"}
         loadingComponent={<LoadingDisplay />}
+        emptyComponent={<Empty height={200} width={200} />}
       >
         {(cleanedData) => (
           <div
@@ -427,14 +450,7 @@ function storageCheckOrRedirect(
         return;
       }
 
-      const url = new URL(BACKEND_API_URL + BackendRoutes.GOOGLE_INCREMENTAL);
-      url.searchParams.append("redirect", location.href);
-      url.searchParams.append(
-        "required_scopes",
-        "openid email profile https://www.googleapis.com/auth/drive"
-      );
-
-      location.href = url.toString();
+      authRedirect(DocumentPlatform.GOOGLE_DRIVE);
 
       return;
     }
@@ -452,9 +468,7 @@ function storageCheckOrRedirect(
         return;
       }
 
-      const url = new URL(BACKEND_API_URL + BackendRoutes.DROPBOX_AUTH);
-      url.searchParams.append("redirect", location.href);
-      location.href = url.toString();
+      authRedirect(DocumentPlatform.DROPBOX);
       return;
     }
 
@@ -475,4 +489,30 @@ function LoadingDisplay() {
       <div>{t("PLEASE_WAIT")}</div>
     </div>
   );
+}
+
+function authRedirect(platform: DocumentPlatform) {
+  let url: URL = null as any;
+
+  switch (platform) {
+    case DocumentPlatform.GOOGLE_DRIVE:
+      {
+        url = new URL(BACKEND_API_URL + BackendRoutes.GOOGLE_INCREMENTAL);
+        url.searchParams.append(
+          "required_scopes",
+          "openid email profile https://www.googleapis.com/auth/drive"
+        );
+      }
+      break;
+    case DocumentPlatform.DROPBOX:
+      {
+        url = new URL(BACKEND_API_URL + BackendRoutes.DROPBOX_AUTH);
+      }
+      break;
+  }
+
+  if (!url) return;
+
+  url.searchParams.append("redirect", location.href);
+  location.href = url.toString();
 }

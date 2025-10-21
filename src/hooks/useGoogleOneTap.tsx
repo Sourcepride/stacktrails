@@ -10,11 +10,7 @@ export default function useGoogleOneTap() {
     // Function to check if Google is loaded and initialize
     const initializeGoogle = async () => {
       try {
-        const googleResponse = await googleSignIn(
-          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!
-        );
-
-        console.log("===================", googleResponse);
+        await googleSignIn(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!);
 
         // send to your backend
       } catch (error) {

@@ -1,12 +1,13 @@
 import useHideOnClickedOutside from "@/hooks/useHideOnClickedOutside";
-import { deBounce } from "@/utilities/debounce";
+import { deBounce } from "@/lib/debounce";
+
 import { TextField, TextFieldProps } from "@mui/material";
 import { useRef, useState } from "react";
 
 type displayType<T> = (
   data: T,
   storeState: "selected" | "empty",
-  click: (data: T) => void,
+  click: (data: T) => void
 ) => React.ReactNode;
 
 type props<T> = {
@@ -40,7 +41,7 @@ const AppSearchField = <T,>({
           inputRef={ref}
           onChange={deBounce(
             () => changeHandler(ref.current?.value ?? ""),
-            1000,
+            1000
           )}
           onFocus={setFocused.bind(undefined, true)}
           error={!!error}
@@ -80,7 +81,7 @@ const AppSearchField = <T,>({
               displayComponent(val, "empty", (v) => {
                 setSelected(v);
                 setFocused.bind(undefined, false)();
-              }),
+              })
             )
           )}
         </div>

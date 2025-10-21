@@ -1,10 +1,16 @@
 import { BackendRoutes } from "@/routes";
+import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNow } from "date-fns";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8020/api/v1";
 
-export function googleOneTapForm(cred: string) {
+export function googleOneTapForm(cred: string, next: string) {
   const form = document.createElement("form");
   form.method = "POST";
   form.action = `${baseURL}${BackendRoutes.GOOGLE_ONE_TAP}`;
@@ -16,17 +22,17 @@ export function googleOneTapForm(cred: string) {
 
   const redirectInput = document.createElement("input");
   redirectInput.type = "hidden";
-  redirectInput.name = "should_redirect";
-  redirectInput.value = "true";
+  redirectInput.name = "redirect";
+  redirectInput.value = next;
 
   form.appendChild(credentialInput);
   form.appendChild(redirectInput);
+
   document.body.appendChild(form);
   form.submit();
 }
 
 export function getImageProxyUrl(url?: string, defaultImg = undefined) {
-  console.log("herrrrrrrrrrrrrrrrrre");
   if (!url) {
     return defaultImg || "/";
   }
@@ -38,7 +44,6 @@ export function getImageProxyUrl(url?: string, defaultImg = undefined) {
   )
     return url;
 
-  console.log("fetching image...");
   return `${
     process.env.NEXT_PUBLIC_API_URL
   }/media/proxy?url=${encodeURIComponent(url)}`;
@@ -120,4 +125,61 @@ export function getThumbnailViewUrl(rawUrl: string) {
   }
 
   return rawUrl;
+}
+
+type Provider = "youtube" | "dailymotion" | "dropbox" | "google_drive";
+
+export function extractExternalId(
+  provider: Provider,
+  url: string
+): string | null {
+  switch (provider) {
+    case "youtube": {
+      // Matches:
+      // - https://www.youtube.com/watch?v=VIDEO_ID
+      // - https://youtu.be/VIDEO_ID
+      // - https://www.youtube.com/embed/VIDEO_ID
+      const match = url.match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+      return match ? match[1] : null;
+    }
+
+    case "dailymotion": {
+      // Matches:
+      // - https://www.dailymotion.com/video/VIDEO_ID
+      // - https://www.dailymotion.com/embed/video/VIDEO_ID
+      const match = url.match(
+        /dailymotion\.com\/(?:embed\/)?video\/([a-zA-Z0-9]+)/
+      );
+      return match ? match[1] : null;
+    }
+
+    case "dropbox": {
+      // Matches: https://www.dropbox.com/s/FILE_ID/filename?dl=0
+      let match = url.match(/dropbox\.com\/s\/([a-zA-Z0-9]+)/);
+      if (match) return match[1];
+
+      // Matches: https://dl.dropboxusercontent.com/scl/fi/FILE_ID/filename
+      match = url.match(/dropboxusercontent\.com\/scl\/fi\/([a-zA-Z0-9]+)/);
+      if (match) return match[1];
+
+      return null;
+    }
+
+    case "google_drive": {
+      // Try `/file/d/FILE_ID/`
+      let match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) return match[1];
+
+      // Try `uc?id=FILE_ID` or `uc?export=download&id=FILE_ID`
+      match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (match) return match[1];
+
+      return null;
+    }
+
+    default:
+      return null;
+  }
 }

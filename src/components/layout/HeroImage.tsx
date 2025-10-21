@@ -19,7 +19,7 @@ const HeroImage: React.FC<HeroImageProps> = ({}) => {
     const interval = 7000;
 
     const animeCallback = (timestamp: number) => {
-      let lastTime = lastTimeRef.current;
+      const lastTime = lastTimeRef.current;
       if (timestamp - lastTime >= interval) {
         lastTimeRef.current = timestamp;
         setIndex((state) => (state >= heroImages.length - 1 ? 0 : state + 1));

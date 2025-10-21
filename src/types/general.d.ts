@@ -1,10 +1,19 @@
 type Profile = {
-  display_name: string;
-  bio: string;
-  avatar: string;
+  display_name?: string;
+  bio?: string;
+  avatar?: string;
   id: string;
   account_id: string;
   username?: string;
+
+  // socials
+  x?: string;
+  youtube?: string;
+  facebook?: string;
+  tiktok?: string;
+  website?: string;
+  instagram?: string;
+  language?: string;
 };
 
 type User = {

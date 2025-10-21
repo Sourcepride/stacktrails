@@ -16,6 +16,7 @@ import {
 import { BackendRoutes } from "@/routes";
 import { Skeleton } from "@mui/material";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { PropsWithChildren, Suspense } from "react";
@@ -25,6 +26,45 @@ type props = {
 };
 
 export const experimental_ppr = true;
+
+export async function generateMetadata({
+  params,
+}: props): // parent: ResolvingMetadata
+Promise<Metadata> {
+  const slug = (await params).slug_id;
+
+  // fetch post information
+  const post: Course = await fetch(
+    process.env.NEXT_PUBLIC_API_URL + BackendRoutes.COURSE_DETAIL(slug)
+  ).then((res) => res.json());
+
+  const ogImage =
+    post.image ?? `${process.env.NEXT_PUBLIC_SITE_URL}/placeholder.png`;
+
+  return {
+    title: post.title,
+    description: post.short_description,
+    openGraph: {
+      title: post.title,
+      description: post.short_description,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/courses/${slug}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.short_description,
+      images: [ogImage],
+    },
+  };
+}
 
 export default async function Page({ params }: props) {
   const { slug_id: slug } = await params;

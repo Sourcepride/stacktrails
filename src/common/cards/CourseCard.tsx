@@ -2,37 +2,48 @@
 
 import { Link } from "@/i18n/navigation";
 import { getImageProxyUrl, getNumberUnit, timeAgo } from "@/lib/utils";
-import { PublicRoutes } from "@/routes";
+import { AppRoutes, PublicRoutes } from "@/routes";
+import { LinearProgress } from "@mui/material";
+import { FaStar } from "@react-icons/all-files/fa/FaStar";
+import { MdOutlineComment } from "@react-icons/all-files/md/MdOutlineComment";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useState } from "react";
-import { FaStar } from "react-icons/fa";
-import { MdOutlineComment } from "react-icons/md";
 
 type CourseCardProps = {
   course: Course;
   // optional: let parent override sizing classes (e.g. "h-96")
   className?: string;
   heightClass?: string;
+  type?: "created" | "enrolled" | "normal";
+  enrollment?: CourseEnrollment;
 };
 
 const CourseCard: React.FC<CourseCardProps> = ({
   course,
   className = "",
   heightClass = "h-80", // default card height; parent can override
+  enrollment,
+  type = "normal",
 }) => {
+  const t = useTranslations();
   const [imgSrc, setImgSrc] = useState(
     getImageProxyUrl(course.image) || "/placeholder.png"
   );
 
+  const url =
+    type === "normal"
+      ? PublicRoutes.getCourseRoute(course.slug)
+      : type === "enrolled"
+      ? AppRoutes.getEnrolledCourseRoute(course.slug)
+      : AppRoutes.getCreatedCourseRoute(course.slug);
+
   return (
     <article
-      className={`w-full ${heightClass}    overflow-hidden rounded-lg  ${className}`}
+      className={`w-full ${heightClass}  overflow-hidden rounded-lg flex flex-col ${className}`}
     >
       {/* Image area = 70% of height flex-[7] */}
-      <Link
-        href={PublicRoutes.getCourseRoute(course.slug)}
-        className="block relative h-[62%] w-full"
-      >
+      <Link href={url} className="block relative h-[62%] w-full">
         <Image
           src={imgSrc}
           alt={"course thumbnail"}
@@ -45,9 +56,9 @@ const CourseCard: React.FC<CourseCardProps> = ({
       </Link>
 
       {/* Content area = remaining 30% flex-[3] */}
-      <div className="p-4 flex flex-col justify-between">
+      <div className="p-4 flex flex-col justify-between flex-1">
         <div>
-          <Link href={PublicRoutes.getCourseRoute(course.slug)}>
+          <Link href={url}>
             <h3 className="font-semibold line-clamp-2">{course.title}</h3>
           </Link>
           <Link
@@ -58,7 +69,22 @@ const CourseCard: React.FC<CourseCardProps> = ({
           </Link>
         </div>
 
-        <div className="flex items-center justify-between mt-2">
+        {enrollment && (
+          <div className="w-full py-2 px-1 space-y-2">
+            <p className="text-xs lowercase font-thin">
+              {t("PROGRESS")} ({Math.round(enrollment.progress_percentage)}%)
+            </p>
+            {!!enrollment.progress_percentage && (
+              <LinearProgress
+                variant="determinate"
+                value={enrollment.progress_percentage}
+                color={"accentColor" as any}
+              />
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-4  text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <FaStar className="text-yellow-500" />
@@ -66,8 +92,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <span>{getNumberUnit(course.comment_count)}</span>
               <MdOutlineComment />
+              <span>{getNumberUnit(course.comment_count)}</span>
             </div>
           </div>
 

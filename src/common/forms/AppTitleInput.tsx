@@ -45,19 +45,27 @@ const AppTitleInput: React.FC<AppTitleInputProps> = ({
   return (
     <div className="">
       <textarea
-        {...props}
-        {...hookFormProps}
-        ref={textareaRef}
+        {...hookFormProps} // register first
+        {...props} // your custom props after
+        ref={(el) => {
+          textareaRef.current = el;
+          if (typeof (hookFormProps as any)?.ref === "function") {
+            (hookFormProps as any).ref(el);
+          } else if ((hookFormProps as any)?.ref) {
+            (hookFormProps as any).ref.current = el;
+          }
+        }}
         className={`text-2xl font-black w-full px-3 outline-0 placeholder:text-appGray400 xl:text-4xl resize-none overflow-hidden ${props.className}`}
         disabled={isLoading || props.disabled}
         placeholder={props.placeholder || "Title"}
         maxLength={200}
         onInput={handleInput}
         style={{
-          minHeight: "1.5em", // Minimum height for one line
+          minHeight: "1.5em",
           ...props.style,
         }}
       />
+
       <ErrorMessage message={errorMessage} />
     </div>
   );

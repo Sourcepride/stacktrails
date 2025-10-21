@@ -3,8 +3,8 @@
 import { Link } from "@/i18n/navigation";
 import { PublicRoutes } from "@/routes";
 import { useAppStore } from "@/store";
+import { FaBars } from "@react-icons/all-files/fa/FaBars";
 import Image from "next/image";
-import { FaBars } from "react-icons/fa";
 import AppNotification from "../notification/AppNotification";
 import LanguageSelector from "./LanguageSelector";
 import Profile from "./Profile";

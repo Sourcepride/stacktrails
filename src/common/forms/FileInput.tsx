@@ -36,7 +36,7 @@ const FileInput: React.FC<FileInputProps> = ({
         <div className="relative my-3 h-[160px] w-full">
           <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-md bg-[#EDEEEF]">
             <img
-              src={src || uploadImg}
+              src={src || (uploadImg as any)}
               className={`w-12 ${src && "h-full w-full object-cover"}`}
               alt="uploaded or icon"
             />

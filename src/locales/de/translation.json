@@ -1,9 +1,9 @@
 {
     "HERO": {
-        "MAIN": "Wir definieren Lernen neu — gemeinsam",
-        "SUB": "Eine offene Plattform, auf der Communities Lernressourcen organisieren und mithilfe von KI smarter lernen.",
+        "MAIN": "Wir gestalten Lernen neu – gemeinsam",
+        "SUB": "Eine offene Plattform, auf der Gemeinschaften Lernressourcen organisieren und mit KI gemeinsam smarter lernen.",
         "SEARCH": "Welches Thema interessiert dich?",
-        "TAGS": "Stichwörter"
+        "TAGS": "Tags"
     },
     "PUBLIC_HEADER": {
         "REGISTER": "Registrieren",
@@ -14,10 +14,11 @@
         "CREATE": "Erstellen"
     },
     "LANGUAGE_SELECT": {
+        "ALL": "Alle",
         "ENGLISH": "Englisch",
         "GERMAN": "Deutsch",
-        "SPANISH": "Español",
-        "FRENCH": "Français",
+        "SPANISH": "Spanisch",
+        "FRENCH": "Französisch",
         "CHANGE_LANGUAGE": "Sprache ändern"
     },
     "PUBLIC_FOOTER": {
@@ -31,20 +32,20 @@
         "RIGHTS": "Alle Rechte vorbehalten."
     },
     "HOME_SORT": {
-        "MOST_VIEWED": "Meistgesehen",
-        "TOP_RATED": "Top bewertet",
+        "MOST_VIEWED": "Am häufigsten angesehen",
+        "TOP_RATED": "Am besten bewertet",
         "RECENTLY_ADDED": "Kürzlich hinzugefügt"
     },
     "DIFFICULTY_LEVEL": {
-        "BEGINNER": "Für Einsteiger geeignet",
+        "BEGINNER": "Für Einsteiger",
         "INTERMEDIATE": "Mittelstufe",
         "ADVANCED": "Fortgeschritten",
         "EXPERT": "Experte",
         "ALL": "Alle"
     },
     "TIME_TEXT": {
-        "MIN": "min",
-        "MINS": "mins",
+        "MIN": "Min.",
+        "MINS": "Minuten",
         "JUST_NOW": "gerade eben",
         "HOUR": "Stunde",
         "HOURS": "Stunden",
@@ -63,13 +64,13 @@
     },
     "AUTH": {
         "WELCOME_BACK": "Willkommen zurück",
-        "WELCOME": "Willkommen bei Stacktrials",
-        "INTRODUCTION": "Erstelle ein Konto, um dich mit Gleichgesinnten zu vernetzen, gut kuratierte Kurse zu entdecken und gemeinsam intelligenter zu lernen.",
-        "AGREEMENT_START_PHRASE": "Indem du fortfährst, stimmst du unseren",
+        "WELCOME": "Willkommen bei Stacktrails",
+        "INTRODUCTION": "Erstelle ein Konto, um dich mit Gleichgesinnten zu vernetzen, sorgfältig kuratierte Kurse zu entdecken und gemeinsam smarter zu lernen.",
+        "AGREEMENT_START_PHRASE": "Wenn du fortfährst, stimmst du unseren",
         "TERMS": "Nutzungsbedingungen",
         "PRIVACY": "Datenschutzrichtlinien",
         "HAVE_ACCOUNT": "Noch kein Konto?",
-        "ALREADY_HAVE_AN_ACCOUNT": "Bereits ein Konto?",
+        "ALREADY_HAVE_AN_ACCOUNT": "Du hast bereits ein Konto?",
         "REGISTER": "registrieren",
         "CONTINUE_WITH_GOOGLE": "Mit Google fortfahren",
         "CONTINUE_WITH_GITHUB": "Mit GitHub fortfahren",
@@ -78,7 +79,7 @@
     "AND": "und",
     "GOOGLE_AUTH_MESSAGES": {
         "ERRORS": {
-            "ERROR_LOGIN": "Ups, ein Fehler ist aufgetreten. Bitte kontaktiere das Support-Team."
+            "ERROR_LOGIN": "Hoppla! Ein Fehler ist aufgetreten. Bitte kontaktiere den Support."
         }
     },
     "NAVS": {
@@ -94,12 +95,12 @@
         "ERROR_OCCURRED": "Ein Fehler ist aufgetreten",
         "NOT_FOUND": "Ressource nicht gefunden",
         "ERROR_404": "Fehler 404",
-        "PLEASE_TRY_AGAIN": "Ein Fehler ist aufgetreten! Bitte versuche es erneut"
+        "PLEASE_TRY_AGAIN": "Ein Fehler ist aufgetreten! Bitte versuche es erneut."
     },
     "LOADING": {
         "LOADING": "Lädt",
         "LOAD_MORE": "Mehr laden",
-        "PLEASE_WAIT": "Lädt, bitte warten"
+        "PLEASE_WAIT": "Bitte warten..."
     },
     "COMMENTS_RATING": {
         "HEADER_TEXT": "Kommentare & Bewertungen",
@@ -108,36 +109,153 @@
         "LOADING_REVIEWS": "Bewertungen werden geladen",
         "LOAD_MORE_REVIEWS": "Mehr Bewertungen laden",
         "LOADING_COMMENTS": "Kommentare werden geladen",
-        "LOAD_MORE_COMMENT": "Mehr Kommentare laden"
+        "LOAD_MORE_COMMENT": "Mehr Kommentare laden",
+        "SIGN_IN": "Melde dich an, um eine Bewertung abzugeben",
+        "CREATION_FAILED": "Stelle sicher, dass du eingeschrieben bist. Ein Fehler ist aufgetreten."
     },
     "COURSE_DETAIL": {
-        "CREATED_BY": "Erstellt von",
+        "CREATED_BY": "erstellt von",
         "LAST_UPDATED": "Zuletzt aktualisiert",
         "RATINGS": "Bewertungen",
-        "ENROLLED": "Eingeschrieben",
+        "ENROLLED": "eingeschrieben",
         "COMMUNITY_COMMENTS": "Community-Kommentare",
         "WHAT_YOU_WILL_LEARN": "Was du lernen wirst",
-        "COURSE_FEATURES": "Kursmerkmale",
-        "BEGINNER_FRIENDLY": "Für Anfänger geeignet",
-        "FREE_ENROLLMENT": "Kostenlose Einschreibung",
+        "COURSE_FEATURES": "Kursfunktionen",
+        "BEGINNER_FRIENDLY": "Einsteigerfreundlich",
+        "OPEN": "Offen",
+        "FREE_ENROLLMENT": "Kostenlose Anmeldung",
         "APPROXIMATELY": "Ungefähr {num} Stunden Inhalt",
         "CERTIFICATE": "Zertifikat nach Abschluss",
         "COURSE_SECTIONS": "Kursabschnitte",
         "FULL_DESCRIPTION": "Vollständige Beschreibung",
         "BIO": "Biografie",
         "ENROLL_NOW": "Jetzt einschreiben",
-        "HEAD_TO_COURSE": "Zum Kurs",
-        "LIFETIME_ACCESS": "Lebenslanger Vollzugang",
+        "HEAD_TO_COURSE": "Zum Kurs gehen",
+        "LIFETIME_ACCESS": "Lebenslanger Zugriff",
         "SHARE_ON": "Teilen auf",
         "REQUIREMENTS": "Voraussetzungen",
-        "SEE_ALL_REMAINING": "Alle verbleibenden anzeigen"
+        "SEE_ALL_REMAINING": "Alle anzeigen"
     },
     "COMMENT": {
-        "COMMENT_CREATION_FAILED": "Ein Fehler ist aufgetreten! Kommentar konnte nicht erstellt werden",
-        "SIGN_IN_TO_COMMENT": "Bitte melde dich an, um zu kommentieren",
-        "ADD_COMMENT": "Einen Kommentar hinzufügen...",
+        "COMMENT_CREATION_FAILED": "Ein Fehler ist aufgetreten! Kommentar konnte nicht erstellt werden.",
+        "SIGN_IN_TO_COMMENT": "Bitte melde dich an, um zu kommentieren.",
+        "ADD_COMMENT": "Kommentar hinzufügen...",
         "COMMENT": "Kommentar",
         "REPLY": "Antworten"
     },
-    "CANCEL": "Abbrechen"
+    "CANCEL": "Abbrechen",
+    "POPUP": {
+        "NO_CANCEL": "Nein, abbrechen",
+        "YES_PROCEED": "Ja, fortfahren"
+    },
+    "BACKEND_MESSAGES": {
+        "ACCOUNT_EXISTS": "Ein Konto mit dieser E-Mail existiert bereits.",
+        "SIGN_IN_ERROR": "Fehler bei der Anmeldung!"
+    },
+    "CONTINUE": "Weiter",
+    "REPLACE_ACCOUNT": {
+        "ACCOUNT_SWITCH": "Konto wechseln",
+        "WARNING": "Du bist dabei, zu einem anderen {provider}-Konto zu wechseln. Dies ersetzt deine aktuelle Verbindung. Möchtest du fortfahren?",
+        "SUCCESS": "Konto erfolgreich ersetzt"
+    },
+    "STORAGE": {
+        "SELECT_STORAGE": "Speicher auswählen",
+        "SELECT_PLATFORM": "Plattform auswählen"
+    },
+    "UPLOAD": {
+        "INVALID_LINK": "Ungültiger Link für die Plattform",
+        "UPLOAD": "Hochladen",
+        "ROOT": "Stammordner",
+        "CHOOSE_FILE": "Bitte wähle eine gültige Datei aus",
+        "UPLOAD_FILE": "Datei hochladen",
+        "SELECT": "Datei aus {storage} auswählen",
+        "WARNING_TEXT": "Wähle immer eine öffentlich zugängliche Datei aus",
+        "SAFELY_CLICK_AWAY": "Du kannst die Seite sicher verlassen – dein Upload läuft im Hintergrund weiter.",
+        "CANCEL_UPLOAD": "Upload abbrechen",
+        "PUBLIC_WARNING": "Nicht geteilte (private) Dateien werden automatisch öffentlich gemacht.",
+        "YOUTUBE_UPLOAD": "Auf YouTube hochladen",
+        "LINK": "Link eingeben"
+    },
+    "CREATE_COURSE": {
+        "TITLE": "Kurstitel",
+        "SHORT_DESCRIPTION": "Kurze Beschreibung",
+        "DESCRIPTION": "Vollständige Kursbeschreibung",
+        "OBJECTIVES": "Lernziele",
+        "PREREQUISITES": "Voraussetzungen",
+        "LEVEL": "Schwierigkeitsgrad",
+        "STATUS": "Status",
+        "ENROLLMENT_TYPE": "Einschreibungsart",
+        "VISIBILITY": "Sichtbarkeit",
+        "ESTIMATE_DURATION": "Geschätzte Dauer (Stunden)",
+        "LANGUAGE": "Sprache",
+        "CREATED": "Kurs {created} erfolgreich!"
+    },
+    "CREATED_COURSE": {
+        "INSTRUCTION": "Ein Kurs muss mindestens einen Abschnitt enthalten, und jeder Abschnitt muss ein Modul haben, bevor er veröffentlicht werden kann.",
+        "MANAGE": "Kursabschnitte verwalten/ansehen",
+        "PUBLISH": "Veröffentlichen",
+        "ARCHIVE": "Archivieren",
+        "EDIT": "Kurs bearbeiten",
+        "PREVIEW": "Kursvorschau",
+        "ERROR": "Ein Fehler ist aufgetreten. Kurs konnte nicht {publish} werden.",
+        "SUCCESS": "Kurs wurde erfolgreich {published}.",
+        "PUBLISHED": "Veröffentlichte Kurse",
+        "ENROLLED_STUDENT": "Eingeschriebene Lernende",
+        "TOTAL_REVIEWS": "Gesamtbewertungen",
+        "TOTAL_COMMENTS": "Gesamtkommentare"
+    },
+    "SECTIONS": {
+        "CREATE": "Abschnitt hinzufügen",
+        "EMPTY": "Lass uns den ersten Abschnitt des Kurses erstellen",
+        "COURSE_DETAILS": "Kursdetails",
+        "SECTIONS": "Abschnitte",
+        "TITLE": "Abschnittstitel",
+        "DESCRIPTION": "Beschreibung",
+        "OBJECTIVES": "Lernziele",
+        "ORDER": "Reihenfolge",
+        "ESTIMATE_DURATION": "Geschätzte Dauer (Minuten)",
+        "OPTIONAL": "Überspringbar",
+        "PROGRESSION_TYPE": "Fortschrittstyp",
+        "SEQUENTIAL": "sequentiell",
+        "FLEXIBLE": "flexibel",
+        "COMPLETION_CRITERIA": "Abschlusskriterien",
+        "EDIT": "Bearbeiten",
+        "CREATED": "Abschnitt {created} erfolgreich"
+    },
+    "MODULE": {
+        "CREATE": "Modul erstellen",
+        "UPDATE": "Modul aktualisieren",
+        "EMPTY": "Lass uns ein Modul erstellen",
+        "MODULES": "Module",
+        "TITLE": "Modultitel",
+        "DESCRIPTION": "Beschreibung",
+        "PREREQUISITES": "Voraussetzungen",
+        "REQUIRED": "Erforderlich",
+        "MODULE_TYPE": "Modultyp",
+        "GOOGLE_WEBSITE": "https://google.com",
+        "MODULE_TYPES": {
+            "VIDEO": "Video",
+            "DOCUMENT": "Dokument",
+            "QUIZ": "Quiz",
+            "DISCUSSION": "Diskussion",
+            "EXTERNAL_LINK": "Externer Link"
+        },
+        "EDIT": "Bearbeiten",
+        "ORDER": "Reihenfolge",
+        "ATTACHMENTS": "Anhänge",
+        "CREATE_ATTACHMENT": "Anhang erstellen",
+        "NO_ATTACHMENT": "Noch keine Anhänge",
+        "CREATING_ATTACHMENT": "Anhang für Modul wird erstellt",
+        "SAVE_ATTACHMENT": "Anhang speichern",
+        "ATTACHMENT_SAVED": "Anhang gespeichert",
+        "ERROR_SAVING_ATTACHMENT": "Fehler beim Speichern des Anhangs",
+        "DELETE_DOCUMENT": "Möchtest du dieses Dokument wirklich löschen?",
+        "ATTACHMENT_REMOVED": "Anhang gelöscht",
+        "ERROR_REMOVING_ATTACHMENT": "Fehler beim Löschen des Anhangs",
+        "SUBMITTING_CONTENT": "Inhalt wird gesendet...",
+        "MODULE_MESSAGE": "Modul wurde erfolgreich erstellt",
+        "ATTACH_VIDEO": "Fehler beim Hinzufügen des Videos",
+        "ATTACH_DOCUMENT": "Fehler beim Hinzufügen des Dokuments",
+        "FAILED_CREATE_MODULE": "Modul konnte nicht erstellt werden"
+    }
 }

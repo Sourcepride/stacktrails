@@ -1,14 +1,18 @@
 "use client";
 
+import Loading from "@/app/[locale]/(public)/loading";
+import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import CenterOnLgScreen from "./CenterOnLgScreen";
 import Empty from "./Empty";
+import ErrorDisplay from "./Error";
 
 type LoadingComponentProps<T> = {
   loading: boolean;
   empty?: boolean;
   error?: boolean;
   data?: T;
+  errorStatus?: number;
   loadingComponent?: ReactNode;
   emptyComponent?: ReactNode;
   errorComponent?: ReactNode;
@@ -19,18 +23,40 @@ const LoadingComponent = <T,>({
   loading,
   empty = false,
   error = false,
+  errorStatus,
   data,
   loadingComponent,
   emptyComponent,
   errorComponent,
   children,
 }: LoadingComponentProps<T>) => {
-  if (loading) {
-    return loadingComponent ?? <CenterOnLgScreen>Loading...</CenterOnLgScreen>;
+  const t = useTranslations();
+  if (error) {
+    const errorDisplay =
+      errorStatus === 403 ? (
+        <ErrorDisplay
+          title={t("PERMISSION_REQUIRED")}
+          message={t("PERMISSION_MESSAGE")}
+        />
+      ) : errorStatus === 404 ? (
+        <ErrorDisplay title={t("NOT_FOUND")} message={t("NOT_FOUND_TEXT")} />
+      ) : (
+        <ErrorDisplay />
+      );
+
+    return (
+      errorComponent ?? <CenterOnLgScreen>{errorDisplay}</CenterOnLgScreen>
+    );
   }
 
-  if (error) {
-    return errorComponent ?? <CenterOnLgScreen>Error</CenterOnLgScreen>;
+  if (loading) {
+    return (
+      loadingComponent ?? (
+        <CenterOnLgScreen>
+          <Loading />
+        </CenterOnLgScreen>
+      )
+    );
   }
 
   if (empty) {

@@ -7,6 +7,11 @@ import { getCommentReplies, likeUnlike } from "@/lib/http/commentFunc";
 import { timeAgo } from "@/lib/utils";
 import { PublicRoutes } from "@/routes";
 import { Avatar, Button, CircularProgress, IconButton } from "@mui/material";
+import { BsHandThumbsUp } from "@react-icons/all-files/bs/BsHandThumbsUp";
+import { BsHandThumbsUpFill } from "@react-icons/all-files/bs/BsHandThumbsUpFill";
+import { FaAngleDown } from "@react-icons/all-files/fa/FaAngleDown";
+import { FaAngleUp } from "@react-icons/all-files/fa/FaAngleUp";
+import { FaRegCommentDots } from "@react-icons/all-files/fa/FaRegCommentDots";
 import {
   useMutation,
   useQueryClient,
@@ -14,8 +19,6 @@ import {
 } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Suspense, useState } from "react";
-import { BsHandThumbsUp, BsHandThumbsUpFill } from "react-icons/bs";
-import { FaAngleDown, FaAngleUp, FaRegCommentDots } from "react-icons/fa";
 import CreateComment from "./CreateComment";
 
 type CommentProps = {

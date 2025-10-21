@@ -4,7 +4,7 @@ type GoogleResponse = {
 
 export async function googleSignIn(clientId: string): Promise<GoogleResponse> {
   return new Promise((resolve, reject) => {
-    // @ts-ignore - Google loads this globally
+    // @ts-expect-error - Google loads this globally
     window.google.accounts.id.initialize({
       client_id: clientId,
       callback: (response: GoogleResponse) => {
@@ -12,7 +12,7 @@ export async function googleSignIn(clientId: string): Promise<GoogleResponse> {
       },
     });
 
-    // @ts-ignore
+    // @ts-expect-error not used
     window.google.accounts.id.prompt((notification: any) => {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         reject("User closed popup or blocked login");

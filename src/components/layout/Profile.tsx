@@ -3,12 +3,13 @@
 import { Link } from "@/i18n/navigation";
 import { AppRoutes, BackendRoutes, PublicRoutes } from "@/routes";
 import { useAppStore } from "@/store";
+import { BsBackpack2Fill } from "@react-icons/all-files/bs/BsBackpack2Fill";
+import { BsPassportFill } from "@react-icons/all-files/bs/BsPassportFill";
+import { GiScrollQuill } from "@react-icons/all-files/gi/GiScrollQuill";
+import { IoIosStats } from "@react-icons/all-files/io/IoIosStats";
+import { IoLogOutOutline } from "@react-icons/all-files/io5/IoLogOutOutline";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { BsBackpack2Fill, BsPassportFill } from "react-icons/bs";
-import { GiScrollQuill } from "react-icons/gi";
-import { IoIosStats } from "react-icons/io";
-import { IoLogOutOutline } from "react-icons/io5";
 
 import { appFetch } from "@/lib/appFetch";
 import { appToast } from "@/lib/appToast";

@@ -27,10 +27,102 @@ const lexend = Lexend({
   display: "swap",
 });
 
+// 1. CHOOSE A GOOD BASE URL
+const siteUrl = "https://stacktrails.com";
+
+// 2. REFINE YOUR TITLE AND DESCRIPTION
+const siteTitle = "StackTrails: Collaborative Learning, Structured Paths";
+const siteDescription =
+  "StackTrails is an open platform where communities create and share structured learning paths. Built by learners, for learners, we turn information chaos into a collaborative journey.";
+
 export const metadata: Metadata = {
-  title: "StackTrails",
-  description:
-    "A Public peer learning platform for sharing currated/aggregated courses.  Built for the community, by the community.",
+  // --- IMPORTANT: SETS THE BASE URL ---
+  metadataBase: new URL(siteUrl),
+
+  // --- MAIN SEO TAGS ---
+  title: {
+    default: siteTitle, // The default title for the site
+    template: `%s | StackTrails`, // How page-specific titles will look (e.g., "About Us | StackTrails")
+  },
+  description: siteDescription,
+  authors: [{ name: "Goodnews", url: "https://dev.osonwa.com" }], // Your original 'authors'
+  creator: "Goodnews Osonwa",
+
+  // --- ROBOTS & CANONICAL ---
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "/", // This page is the root, update for other pages
+  },
+
+  // --- KEYWORDS (Good to have) ---
+  keywords: [
+    "StackTrails",
+    "collaborative learning",
+    "structured learning",
+    "open learning platform",
+    "community learning",
+    "learning resources",
+    "social learning",
+    "e-learning community",
+    "learn to code",
+    "shared learning paths",
+  ],
+
+  // --- ICONS & FAVICONS ---
+  icons: {
+    icon: "/favicon.ico", // Standard favicon
+    shortcut: "/favicon-16x16.png", // Legacy shortcut
+    apple: "/apple-touch-icon.png", // For Apple devices
+    other: {
+      rel: "android-chrome-192x192", // For Android devices
+      url: "/android-chrome-192x192.png",
+    },
+  },
+
+  // --- OPEN GRAPH (FOR FACEBOOK, LINKEDIN, DISCORD, ETC.) ---
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl, // The canonical URL for this page
+    siteName: "StackTrails",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "StackTrails - Collaborative Learning Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+
+  // --- TWITTER (FOR X) ---
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    creator: "@stacktrails",
+    site: "@stackTrails",
+    images: ["/og-image.png"],
+  },
+
+  // --- OTHER ---
+  manifest: "/site.webmanifest", // For PWA capabilities
+};
+
+export const viewport = {
+  themeColor: "#1e90ff",
 };
 
 export default function RootLayout({
@@ -40,6 +132,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <link rel="icon" href="/black-logo.svg" type="image/svg" sizes="32x32" />
       <body className={`${bebas.variable} ${lexend.variable} antialiased`}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>

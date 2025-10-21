@@ -1,7 +1,7 @@
 "use client";
 
+import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { useEffect, useRef, useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
 
 interface FileUploadBoxProps {
   onChange?: (file: File | null) => void;

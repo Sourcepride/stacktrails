@@ -2,10 +2,10 @@
 
 import messageToast from "@/common/popups/MessageCustomToast";
 import { useRouter } from "@/i18n/navigation";
+import { IoMdWarning } from "@react-icons/all-files/io/IoMdWarning";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { PropsWithChildren, useEffect, useMemo } from "react";
-import { IoMdWarning } from "react-icons/io";
 
 type QueryMessagesWrapperProps = PropsWithChildren;
 const QueryMessagesWrapper: React.FC<QueryMessagesWrapperProps> = ({

@@ -4,8 +4,8 @@ import { Link } from "@/i18n/navigation";
 import { PublicRoutes } from "@/routes";
 import { useAppStore } from "@/store";
 import { Button, IconButton } from "@mui/material";
+import { FaBars } from "@react-icons/all-files/fa/FaBars";
 import { useTranslations } from "next-intl";
-import { FaBars } from "react-icons/fa";
 import Profile from "./Profile";
 
 export default function CTAORProfie() {

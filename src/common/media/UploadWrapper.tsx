@@ -1,5 +1,8 @@
 "use client";
 
+import { makeGoogleFilePublic } from "@/hooks/useUploadtoDrive";
+import { makeFilePublicDropbox } from "@/hooks/useUploadToDropBox";
+import { appToast } from "@/lib/appToast";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AvailableSources } from "./media.constants";
@@ -55,11 +58,20 @@ const UploadWrapper: React.FC<UploadWrapperProps> = ({
       {showPicker && (
         <StorageFileDisplay
           chosenFileHandler={(file, provider) => {
-            console.log("called");
-            onCompleted(
-              file.url || "",
-              provider === "dropbox" ? "drop_box" : (provider as any)
-            );
+            if (provider === "dropbox") {
+              makeFilePublicDropbox(file.id)
+                .then((v) => {
+                  onCompleted(v, "drop_box");
+                })
+                .catch((err) => appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED")));
+            } else if (provider === "google_drive") {
+              makeGoogleFilePublic(file.id)
+                .then((v) => {
+                  onCompleted(v, provider);
+                })
+                .catch((err) => appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED")));
+            }
+
             setShow(false);
           }}
           mimeType={mimeType}
@@ -106,6 +118,13 @@ function SourcesSwitch({
         />
       );
     case "youtube":
-      return <YoutubeUpload />;
+      return (
+        <YoutubeUpload
+          onClose={onClose}
+          onCompleted={(urls) => {
+            onCompleted(urls?.[0] ?? "", provider);
+          }}
+        />
+      );
   }
 }

@@ -326,7 +326,7 @@ async function batchUploadDropbox(
 export async function makeFilePublicDropbox(pathOrId: string) {
   if (!pathOrId) throw new Error("pathOrId required");
 
-  let accessToken = await getFreshAccessToken();
+  const accessToken = await getFreshAccessToken();
 
   // Try to create a shared link
   const createRes = await fetch(

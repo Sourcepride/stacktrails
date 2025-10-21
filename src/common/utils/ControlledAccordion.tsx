@@ -6,8 +6,8 @@ import {
   AccordionSummary,
   useTheme,
 } from "@mui/material";
+import { MdKeyboardArrowDown } from "@react-icons/all-files/md/MdKeyboardArrowDown";
 import React from "react";
-import { MdKeyboardArrowDown } from "react-icons/md";
 
 interface ControlledAccordionProps {
   children: React.ReactNode;

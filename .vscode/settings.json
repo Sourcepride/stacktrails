@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["stacktrails"],
+  "cSpell.words": ["dailymotion", "googledrive", "stacktrails"],
   "files.watcherExclude": {
     "**/.next/*/**": true,
     "**/node_modules/*/**": true

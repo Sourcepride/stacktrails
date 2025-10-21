@@ -3,7 +3,7 @@ import ExpandableContent from "@/common/utils/ExpandableContent";
 
 type FullDescriptionProps = {
   data: Course;
-  t: Function;
+  t: any;
 };
 const FullDescription: React.FC<FullDescriptionProps> = ({ data, t }) => {
   return (

@@ -2,16 +2,14 @@
 
 import MarkdownRenderer from "@/common/markdown/AppMdRenderer";
 import ControlledAccordion from "@/common/utils/ControlledAccordion";
+import { MdDescription } from "@react-icons/all-files/md/MdDescription";
+import { MdKeyboardArrowDown } from "@react-icons/all-files/md/MdKeyboardArrowDown";
+import { MdKeyboardArrowUp } from "@react-icons/all-files/md/MdKeyboardArrowUp";
+import { MdKeyboardVoice } from "@react-icons/all-files/md/MdKeyboardVoice";
+import { MdLink } from "@react-icons/all-files/md/MdLink";
+import { MdOndemandVideo } from "@react-icons/all-files/md/MdOndemandVideo";
+import { MdQuiz } from "@react-icons/all-files/md/MdQuiz";
 import { useState } from "react";
-import {
-  MdDescription,
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
-  MdKeyboardVoice,
-  MdLink,
-  MdOndemandVideo,
-  MdQuiz,
-} from "react-icons/md";
 
 type ModuleProps = {
   data: Module;
@@ -40,7 +38,7 @@ const Module: React.FC<ModuleProps> = ({ data, showDescription }) => {
       <div className="flex items-center gap-8">
         <h3>
           {contentTypeIcons[data.module_type]}
-          Module title
+          {data.title}
         </h3>
         {showDescription && (
           <button

@@ -10,9 +10,12 @@ const createUploadSlice: StateCreator<
   addJob: (job) => {
     const id = crypto.randomUUID();
     set((state) => ({
-      jobs: [...state.jobs, { ...job, id, status: "pending", progress: 0 }],
+      jobs: [
+        ...state.jobs,
+        { ...job, id: job?.id ?? id, status: "pending", progress: 0 },
+      ],
     }));
-    return id;
+    return job?.id ?? id;
   },
   updateJob: (id, data) =>
     set((state) => ({

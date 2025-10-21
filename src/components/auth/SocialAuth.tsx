@@ -7,12 +7,18 @@ import { BackendRoutes, PublicRoutes } from "@/routes";
 import { GoogleLogin } from "@react-oauth/google";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 type SocialAuthProps = {
   login?: boolean;
 };
 const SocialAuth: React.FC<SocialAuthProps> = ({ login }) => {
   const locale = useLocale();
+  const nextRaw = useSearchParams().get("next") || `/${locale}`;
+
+  const next = fullURL(nextRaw)
+    ? fullURL(nextRaw)?.pathname ?? `/${locale}` + fullURL(nextRaw)?.search
+    : nextRaw;
 
   const t = useTranslations();
   return (
@@ -45,7 +51,7 @@ const SocialAuth: React.FC<SocialAuthProps> = ({ login }) => {
           width="350"
           onSuccess={(credentialResponse) => {
             if (credentialResponse.credential)
-              googleOneTapForm(credentialResponse.credential);
+              googleOneTapForm(credentialResponse.credential, next);
             else appToast.Error("Oops an error occurred contact support team");
           }}
           onError={() => {
@@ -66,7 +72,7 @@ const SocialAuth: React.FC<SocialAuthProps> = ({ login }) => {
         {/* GitHub Login Button */}
         <button
           onClick={() => {
-            location.href = `${process.env.NEXT_PUBLIC_API_URL}${BackendRoutes.GITHUB_LOGIN}?should_redirect=true`;
+            location.href = `${process.env.NEXT_PUBLIC_API_URL}${BackendRoutes.GITHUB_LOGIN}?redirect=${next}`;
           }}
           className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
@@ -114,3 +120,11 @@ const SocialAuth: React.FC<SocialAuthProps> = ({ login }) => {
 };
 
 export default SocialAuth;
+
+function fullURL(str: string): URL | undefined {
+  try {
+    return new URL(str);
+  } catch {
+    return undefined;
+  }
+}

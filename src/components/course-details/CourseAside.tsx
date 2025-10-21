@@ -12,6 +12,12 @@ import { getImageProxyUrl, getNumberUnit } from "@/lib/utils";
 import { AppRoutes } from "@/routes";
 import { useAppStore } from "@/store";
 import { Button, IconButton, Skeleton } from "@mui/material";
+import { FaFacebookF } from "@react-icons/all-files/fa/FaFacebookF";
+import { FaLayerGroup } from "@react-icons/all-files/fa/FaLayerGroup";
+import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
+import { FaWhatsapp } from "@react-icons/all-files/fa/FaWhatsapp";
+import { FaXTwitter } from "@react-icons/all-files/fa6/FaXTwitter";
+import { MdGroups } from "@react-icons/all-files/md/MdGroups";
 import {
   useMutation,
   useQuery,
@@ -22,20 +28,14 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import {
-  FaFacebookF,
-  FaLayerGroup,
-  FaLinkedinIn,
-  FaWhatsapp,
-} from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { MdGroups } from "react-icons/md";
 import StarRating from "../courses/Stars";
 import IconAndText from "./IconAndText";
 
-type CourseAsideProps = {};
+type CourseAsideProps = {
+  isPreview?: boolean;
+};
 
-const CourseAside: React.FC<CourseAsideProps> = () => {
+const CourseAside: React.FC<CourseAsideProps> = ({ isPreview }) => {
   const t = useTranslations("COURSE_DETAIL");
   const tl = useTranslations("DIFFICULTY_LEVEL");
   const { slug_id } = useParams<{ slug_id: string }>();
@@ -91,7 +91,11 @@ const CourseAside: React.FC<CourseAsideProps> = () => {
 
       <div className="p-4 flex flex-col gap-4 font-light">
         <p className="text-sm">{data.short_description}</p>
-        <EnrollCTAButton course_id={data.id} slug={slug_id} />
+        {isPreview ? (
+          <Button> CTA Button </Button>
+        ) : (
+          <EnrollCTAButton course_id={data.id} slug={slug_id} />
+        )}
 
         <div className="flex items-center gap-1">
           <StarRating rating={data.average_rating} size="medium" />

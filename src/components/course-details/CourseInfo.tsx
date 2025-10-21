@@ -1,13 +1,13 @@
 import { IconButton } from "@mui/material";
-import { BsBackpack2Fill } from "react-icons/bs";
-import { FaMedal } from "react-icons/fa";
-import { HiMiniSquare3Stack3D } from "react-icons/hi2";
-import { IoIosAlarm } from "react-icons/io";
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
+import { BsBackpack2Fill } from "@react-icons/all-files/bs/BsBackpack2Fill";
+import { FaMedal } from "@react-icons/all-files/fa/FaMedal";
+import { HiMiniSquare3Stack3D } from "@react-icons/all-files/hi2/HiMiniSquare3Stack3D";
+import { IoIosAlarm } from "@react-icons/all-files/io/IoIosAlarm";
+import { IoCheckmarkDoneOutline } from "@react-icons/all-files/io5/IoCheckmarkDoneOutline";
 
 type CourseInfoProps = {
   data: Course;
-  t: Function;
+  t: any;
 };
 
 // objectives = [
@@ -27,22 +27,23 @@ type CourseInfoProps = {
 // ],
 
 const level = {
-  beginner: "Beginner Friendly",
-  intermediate: "Intermediate",
-  advanced: "Advanced ",
-  expert: "Expert",
+  beginner: "DIFFICULTY_LEVEL.BEGINNER",
+  intermediate: "DIFFICULTY_LEVEL.INTERMEDIATE",
+  advanced: "DIFFICULTY_LEVEL.ADVANCED",
+  expert: "DIFFICULTY_LEVEL.EXPERT",
+  all: "DIFFICULTY_LEVEL.ALL",
 };
 
 const CourseInfo: React.FC<CourseInfoProps> = ({ data, t }) => {
   const features = [
     {
-      value: level[data.difficulty_level as keyof typeof level],
+      value: t(level[data.difficulty_level as keyof typeof level]),
       icon: <HiMiniSquare3Stack3D />,
     },
     {
       value:
         data.enrollment_type === "open"
-          ? t("COURSE_DETAIL.BEGINNER_FRIENDLY")
+          ? t("COURSE_DETAIL.OPEN")
           : data.enrollment_type,
       icon: <BsBackpack2Fill />,
     },

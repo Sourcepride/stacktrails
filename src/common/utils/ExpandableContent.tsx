@@ -42,7 +42,6 @@ const ExpandableContent: React.FC<ExpandableContentProps> = ({
 }) => {
   const theme = useTheme();
   const contentRef = useRef<HTMLDivElement>(null);
-  const measureRef = useRef<HTMLDivElement>(null); // Separate ref for measuring
   const [internalExpanded, setInternalExpanded] = useState(false);
   const [needsExpansion, setNeedsExpansion] = useState(false);
   const [fullContentHeight, setFullContentHeight] = useState<number>(0);
@@ -52,37 +51,39 @@ const ExpandableContent: React.FC<ExpandableContentProps> = ({
   const expanded = controlled ? controlledExpanded ?? false : internalExpanded;
 
   useEffect(() => {
-    // Create a temporary element to measure the full content height
-    if (measureRef.current) {
-      // Clone the content and measure it without constraints
-      const tempDiv = document.createElement("div");
-      tempDiv.style.position = "absolute";
-      tempDiv.style.visibility = "hidden";
-      tempDiv.style.height = "auto";
-      tempDiv.style.width = measureRef.current.offsetWidth + "px"; // Same width as container
-      tempDiv.style.maxHeight = "none";
-      tempDiv.innerHTML = measureRef.current.innerHTML;
+    const contentElement = contentRef.current;
+    if (!contentElement) return;
 
-      document.body.appendChild(tempDiv);
-      const naturalHeight = tempDiv.offsetHeight;
-      document.body.removeChild(tempDiv);
-
-      setFullContentHeight(naturalHeight);
-
-      let calculatedMax = maxHeight;
-
-      if (maxLines) {
-        calculatedMax = lineHeight * maxLines;
-        setCalculatedMaxHeight(calculatedMax);
-      }
-
-      if (maxCharacters) {
-        const textContent = measureRef.current.textContent || "";
-        setNeedsExpansion(textContent.length > maxCharacters);
-      } else {
-        setNeedsExpansion(naturalHeight > calculatedMax);
-      }
+    // Calculate the collapsed height based on props
+    let collapsedHeight = maxHeight;
+    if (maxLines) {
+      collapsedHeight = lineHeight * maxLines;
     }
+    setCalculatedMaxHeight(collapsedHeight);
+
+    // Use ResizeObserver to detect when the content's size changes.
+    // This correctly handles asynchronously rendered content like Markdown.
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Use scrollHeight to get the full height of the content, even when overflowing
+        const naturalHeight = entry.target.scrollHeight;
+
+        setFullContentHeight(naturalHeight);
+
+        // Determine if expansion is needed based on the final, measured height
+        if (maxCharacters) {
+          const textContent = entry.target.textContent || "";
+          setNeedsExpansion(textContent.length > maxCharacters);
+        } else {
+          setNeedsExpansion(naturalHeight > collapsedHeight);
+        }
+      }
+    });
+
+    observer.observe(contentElement);
+
+    // Cleanup: disconnect the observer when the component unmounts
+    return () => observer.disconnect();
   }, [children, maxHeight, maxLines, lineHeight, maxCharacters]);
 
   const handleToggle = () => {
@@ -94,12 +95,13 @@ const ExpandableContent: React.FC<ExpandableContentProps> = ({
   };
 
   const getTruncatedContent = () => {
+    // Character-based truncation is handled differently from height-based
     if (!maxCharacters || expanded) return children;
 
     const textContent =
       typeof children === "string"
         ? children
-        : measureRef.current?.textContent || "";
+        : contentRef.current?.textContent || "";
 
     if (textContent.length <= maxCharacters) return children;
 
@@ -114,40 +116,16 @@ const ExpandableContent: React.FC<ExpandableContentProps> = ({
 
   const defaultGradient = gradientColor || theme.palette.background.default;
 
-  // Hidden div for measuring content
-  const measurementDiv = (
-    <div
-      ref={measureRef}
-      style={{
-        position: "absolute",
-        visibility: "hidden",
-        height: "auto",
-        width: "100%",
-        maxHeight: "none",
-        pointerEvents: "none",
-        zIndex: -1,
-      }}
-    >
-      {children}
-    </div>
-  );
-
-  if (!needsExpansion) {
-    return (
-      <div className={`w-full relative ${containerClassName}`}>
-        {measurementDiv}
-        {children}
-      </div>
-    );
+  // If the content doesn't need expansion, just render it directly.
+  // We check fullContentHeight > 0 to avoid a flash of the collapsed state on initial render.
+  if (!needsExpansion && fullContentHeight > 0) {
+    return <div className={containerClassName}>{children}</div>;
   }
 
   return (
     <div className={`relative w-full ${containerClassName}`}>
-      {measurementDiv}
-
       {/* Content Container */}
       <div
-        ref={contentRef}
         className="overflow-hidden transition-all duration-300 ease-in-out w-full relative"
         style={{
           maxHeight: expanded
@@ -156,7 +134,10 @@ const ExpandableContent: React.FC<ExpandableContentProps> = ({
           transitionDuration: `${animationDuration}ms`,
         }}
       >
-        <div className="w-full">{getTruncatedContent()}</div>
+        {/* The ref is now on the direct child that contains the content */}
+        <div ref={contentRef} className="w-full">
+          {getTruncatedContent()}
+        </div>
 
         {/* Gradient Overlay */}
         {showGradient && !expanded && (
@@ -169,28 +150,30 @@ const ExpandableContent: React.FC<ExpandableContentProps> = ({
         )}
       </div>
 
-      {/* Expand/Collapse Button */}
-      <div className={`mt-2 w-full ${buttonPositionClass}`}>
-        <button
-          onClick={handleToggle}
-          className={`
-            px-3 py-1 text-sm font-medium rounded transition-colors duration-200
-            hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
-            ${buttonClassName}
-          `}
-          style={{
-            color: theme.palette.primary.main,
-            backgroundColor: "transparent",
-          }}
-        >
-          {expanded ? collapseText : expandText}
-        </button>
-      </div>
+      {/* Expand/Collapse Button - Only show if needed */}
+      {needsExpansion && (
+        <div className={`mt-2 w-full ${buttonPositionClass}`}>
+          <button
+            onClick={handleToggle}
+            className={`
+              px-3 py-1 text-sm font-medium rounded transition-colors duration-200
+              hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+              ${buttonClassName}
+            `}
+            style={{
+              color: theme.palette.primary.main,
+              backgroundColor: "transparent",
+            }}
+          >
+            {expanded ? collapseText : expandText}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-// Text-specific expandable component
+// Text-specific expandable component (Unchanged)
 interface ExpandableTextProps {
   text: string;
   maxCharacters?: number;
@@ -245,7 +228,7 @@ const ExpandableText: React.FC<ExpandableTextProps> = ({
   );
 };
 
-// Example usage component
+// Example usage component (Unchanged)
 const ExpandableContentExample: React.FC = () => {
   const [controlled1, setControlled1] = useState(false);
 
@@ -277,7 +260,7 @@ const ExpandableContentExample: React.FC = () => {
         </ExpandableContent>
       </div>
 
-      {/* Line-based expansion - PROPERLY FIXED */}
+      {/* Line-based expansion */}
       <div className="w-full border rounded-lg p-4">
         <h3 className="font-semibold mb-3">
           Line-Based Expansion (3 lines max, 24px line height)
@@ -345,7 +328,7 @@ const ExpandableContentExample: React.FC = () => {
         </button>
       </div>
 
-      {/* Simple text expansion - this one was already working */}
+      {/* Simple text expansion */}
       <div className="w-full border rounded-lg p-4">
         <h3 className="font-semibold mb-3">
           Simple Text Expansion (20 words max)

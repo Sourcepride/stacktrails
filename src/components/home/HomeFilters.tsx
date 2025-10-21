@@ -5,9 +5,9 @@ import { AppRoutes } from "@/routes";
 import { Button } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { FaPlus } from "react-icons/fa";
 import { useFilter } from "./FilterProvider";
 
 type params = {};

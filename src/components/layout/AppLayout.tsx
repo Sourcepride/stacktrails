@@ -18,7 +18,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           barIsOpen && "w-full xl:w-[calc(100%-300px)]"
         }  ml-auto mt-[70px]`}
       >
-        <CenterOnLgScreen className="!px-0 !py-0 xl:!px-4">
+        <CenterOnLgScreen
+          {...{ component: "div" }}
+          className="!px-0 !py-0 xl:!px-4"
+        >
           {children}
         </CenterOnLgScreen>
       </main>

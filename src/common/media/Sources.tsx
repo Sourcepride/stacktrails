@@ -7,9 +7,10 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+import { FiChevronDown } from "@react-icons/all-files/fi/FiChevronDown";
+import { FiChevronUp } from "@react-icons/all-files/fi/FiChevronUp";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { AvailableSources } from "./media.constants";
 
 type Option = {

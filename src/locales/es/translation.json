@@ -1,9 +1,9 @@
 {
     "HERO": {
-        "MAIN": "Redefiniendo cómo aprendemos, juntos",
-        "SUB": "Una plataforma abierta donde las comunidades organizan recursos de estudio y aprenden de forma más inteligente con IA.",
+        "MAIN": "Redefiniendo la forma en que aprendemos, juntos",
+        "SUB": "Una plataforma abierta donde las comunidades organizan recursos de estudio y aprenden de manera más inteligente con IA.",
         "SEARCH": "¿Qué tema te interesa?",
-        "TAGS": "etiquetas"
+        "TAGS": "Etiquetas"
     },
     "PUBLIC_HEADER": {
         "REGISTER": "Registrarse",
@@ -14,6 +14,7 @@
         "CREATE": "Crear"
     },
     "LANGUAGE_SELECT": {
+        "ALL": "Todos",
         "ENGLISH": "Inglés",
         "GERMAN": "Alemán",
         "SPANISH": "Español",
@@ -21,7 +22,7 @@
         "CHANGE_LANGUAGE": "Cambiar idioma"
     },
     "PUBLIC_FOOTER": {
-        "ABOUT": "Acerca de",
+        "ABOUT": "Acerca de nosotros",
         "BLOG": "Blog",
         "CONTACT": "Contacto",
         "SUPPORT": "Soporte",
@@ -36,15 +37,16 @@
         "RECENTLY_ADDED": "Recientemente añadidos"
     },
     "DIFFICULTY_LEVEL": {
-        "BEGINNER": "Apto para principiantes",
+        "BEGINNER": "Para principiantes",
         "INTERMEDIATE": "Intermedio",
         "ADVANCED": "Avanzado",
-        "EXPERT": "Experto"
+        "EXPERT": "Experto",
+        "ALL": "Todos"
     },
     "TIME_TEXT": {
         "MIN": "min",
-        "MINS": "mins",
-        "JUST_NOW": "ahora mismo",
+        "MINS": "minutos",
+        "JUST_NOW": "justo ahora",
         "HOUR": "hora",
         "HOURS": "horas",
         "DAY": "día",
@@ -61,12 +63,12 @@
         "SELECT_DIFFICULTY": "Seleccionar nivel de dificultad"
     },
     "AUTH": {
-        "WELCOME_BACK": "Bienvenido de vuelta",
-        "WELCOME": "Bienvenido a Stacktrials",
-        "INTRODUCTION": "Crea una cuenta para conectar con personas afines, explorar cursos bien curados y aprender de forma más inteligente juntos.",
+        "WELCOME_BACK": "Bienvenido de nuevo",
+        "WELCOME": "Bienvenido a Stacktrails",
+        "INTRODUCTION": "Crea una cuenta para conectar con personas afines, explorar cursos bien organizados y aprender de forma más inteligente juntos.",
         "AGREEMENT_START_PHRASE": "Al continuar, aceptas nuestros",
         "TERMS": "Términos",
-        "PRIVACY": "Política de Privacidad",
+        "PRIVACY": "Política de privacidad",
         "HAVE_ACCOUNT": "¿No tienes una cuenta?",
         "ALREADY_HAVE_AN_ACCOUNT": "¿Ya tienes una cuenta?",
         "REGISTER": "registrarse",
@@ -74,5 +76,186 @@
         "CONTINUE_WITH_GITHUB": "Continuar con GitHub",
         "OR": "o"
     },
-    "AND": "y"
+    "AND": "y",
+    "GOOGLE_AUTH_MESSAGES": {
+        "ERRORS": {
+            "ERROR_LOGIN": "¡Vaya! Ocurrió un error. Contacta al equipo de soporte."
+        }
+    },
+    "NAVS": {
+        "DASHBOARD": "Panel",
+        "ENROLLED": "Inscrito",
+        "PROFILE": "Perfil",
+        "CREATED": "Creado",
+        "CREATE": "Crear",
+        "LOGOUT": "Cerrar sesión"
+    },
+    "EXCEPTIONS": {
+        "NO_CONTENT": "Sin contenido",
+        "ERROR_OCCURRED": "Ocurrió un error",
+        "NOT_FOUND": "Recurso no encontrado",
+        "ERROR_404": "Error 404",
+        "PLEASE_TRY_AGAIN": "¡Ocurrió un error! Por favor, inténtalo de nuevo."
+    },
+    "LOADING": {
+        "LOADING": "Cargando",
+        "LOAD_MORE": "Cargar más",
+        "PLEASE_WAIT": "Cargando, por favor espera"
+    },
+    "COMMENTS_RATING": {
+        "HEADER_TEXT": "Comentarios y valoraciones",
+        "REVIEWS_AND_RATING": "Reseñas y valoraciones",
+        "COMMUNITY_COMMENTS": "Comentarios de la comunidad",
+        "LOADING_REVIEWS": "Cargando reseñas",
+        "LOAD_MORE_REVIEWS": "Cargar más reseñas",
+        "LOADING_COMMENTS": "Cargando comentarios",
+        "LOAD_MORE_COMMENT": "Cargar más comentarios",
+        "SIGN_IN": "Inicia sesión para dejar una reseña",
+        "CREATION_FAILED": "Asegúrate de estar inscrito. Ocurrió un error."
+    },
+    "COURSE_DETAIL": {
+        "CREATED_BY": "creado por",
+        "LAST_UPDATED": "Última actualización",
+        "RATINGS": "valoraciones",
+        "ENROLLED": "inscritos",
+        "COMMUNITY_COMMENTS": "comentarios de la comunidad",
+        "WHAT_YOU_WILL_LEARN": "Lo que aprenderás",
+        "COURSE_FEATURES": "Características del curso",
+        "BEGINNER_FRIENDLY": "Apto para principiantes",
+        "OPEN": "Abierto",
+        "FREE_ENROLLMENT": "Inscripción gratuita",
+        "APPROXIMATELY": "Aproximadamente {num} horas de contenido",
+        "CERTIFICATE": "Certificado al finalizar",
+        "COURSE_SECTIONS": "Secciones del curso",
+        "FULL_DESCRIPTION": "Descripción completa",
+        "BIO": "biografía",
+        "ENROLL_NOW": "Inscríbete ahora",
+        "HEAD_TO_COURSE": "Ir al curso",
+        "LIFETIME_ACCESS": "Acceso de por vida",
+        "SHARE_ON": "Compartir en",
+        "REQUIREMENTS": "Requisitos",
+        "SEE_ALL_REMAINING": "Ver todos los restantes"
+    },
+    "COMMENT": {
+        "COMMENT_CREATION_FAILED": "¡Ocurrió un error! No se pudo crear el comentario.",
+        "SIGN_IN_TO_COMMENT": "Inicia sesión para comentar",
+        "ADD_COMMENT": "Añadir un comentario...",
+        "COMMENT": "Comentario",
+        "REPLY": "Responder"
+    },
+    "CANCEL": "Cancelar",
+    "POPUP": {
+        "NO_CANCEL": "No, cancelar",
+        "YES_PROCEED": "Sí, continuar"
+    },
+    "BACKEND_MESSAGES": {
+        "ACCOUNT_EXISTS": "¡Ups! Ya existe una cuenta con este correo electrónico.",
+        "SIGN_IN_ERROR": "Error al iniciar sesión"
+    },
+    "CONTINUE": "Continuar",
+    "REPLACE_ACCOUNT": {
+        "ACCOUNT_SWITCH": "Cambio de cuenta",
+        "WARNING": "Estás a punto de cambiar a una cuenta diferente de {provider}. Esto reemplazará tu conexión actual. ¿Deseas continuar?",
+        "SUCCESS": "Cuenta reemplazada con éxito"
+    },
+    "STORAGE": {
+        "SELECT_STORAGE": "Seleccionar almacenamiento",
+        "SELECT_PLATFORM": "Seleccionar plataforma"
+    },
+    "UPLOAD": {
+        "INVALID_LINK": "Enlace inválido para la plataforma",
+        "UPLOAD": "Subir",
+        "ROOT": "carpeta raíz",
+        "CHOOSE_FILE": "Por favor, elige un archivo válido",
+        "UPLOAD_FILE": "Subir archivo",
+        "SELECT": "Seleccionar archivo desde {storage}",
+        "WARNING_TEXT": "Elige siempre un archivo de acceso público",
+        "SAFELY_CLICK_AWAY": "Puedes navegar o salir con seguridad — la carga continuará en segundo plano.",
+        "CANCEL_UPLOAD": "Cancelar carga",
+        "PUBLIC_WARNING": "Los archivos privados seleccionados se harán públicos automáticamente",
+        "YOUTUBE_UPLOAD": "Subir a YouTube",
+        "LINK": "Introducir enlace"
+    },
+    "CREATE_COURSE": {
+        "TITLE": "Título del curso",
+        "SHORT_DESCRIPTION": "Descripción breve",
+        "DESCRIPTION": "Descripción completa del curso",
+        "OBJECTIVES": "Objetivos de aprendizaje",
+        "PREREQUISITES": "Requisitos previos",
+        "LEVEL": "Nivel de dificultad",
+        "STATUS": "Estado",
+        "ENROLLMENT_TYPE": "Tipo de inscripción",
+        "VISIBILITY": "Visibilidad del curso",
+        "ESTIMATE_DURATION": "Duración estimada (horas)",
+        "LANGUAGE": "Idioma",
+        "CREATED": "¡Curso {created} con éxito!"
+    },
+    "CREATED_COURSE": {
+        "INSTRUCTION": "Un curso debe tener al menos una sección, y cada sección debe tener un módulo antes de poder publicarse.",
+        "MANAGE": "Ver o gestionar secciones del curso",
+        "PUBLISH": "Publicar",
+        "ARCHIVE": "Archivar",
+        "EDIT": "Editar curso",
+        "PREVIEW": "Vista previa del curso",
+        "ERROR": "Ocurrió un error. No se pudo {publish} el curso.",
+        "SUCCESS": "Curso {published} con éxito.",
+        "PUBLISHED": "Cursos publicados",
+        "ENROLLED_STUDENT": "Estudiantes inscritos",
+        "TOTAL_REVIEWS": "Total de reseñas",
+        "TOTAL_COMMENTS": "Total de comentarios"
+    },
+    "SECTIONS": {
+        "CREATE": "Añadir sección",
+        "EMPTY": "Vamos a crear la primera sección del curso",
+        "COURSE_DETAILS": "Detalles del curso",
+        "SECTIONS": "Secciones",
+        "TITLE": "Título de la sección",
+        "DESCRIPTION": "Descripción",
+        "OBJECTIVES": "Objetivos de aprendizaje",
+        "ORDER": "Orden",
+        "ESTIMATE_DURATION": "Duración estimada (minutos)",
+        "OPTIONAL": "Opcional",
+        "PROGRESSION_TYPE": "Tipo de progreso",
+        "SEQUENTIAL": "secuencial",
+        "FLEXIBLE": "flexible",
+        "COMPLETION_CRITERIA": "Criterios de finalización",
+        "EDIT": "Editar",
+        "CREATED": "Sección {created} con éxito"
+    },
+    "MODULE": {
+        "CREATE": "Crear módulo",
+        "UPDATE": "Actualizar módulo",
+        "EMPTY": "Vamos a crear un módulo",
+        "MODULES": "Módulos",
+        "TITLE": "Título del módulo",
+        "DESCRIPTION": "Descripción",
+        "PREREQUISITES": "Requisitos previos",
+        "REQUIRED": "Obligatorio",
+        "MODULE_TYPE": "Tipo de módulo",
+        "GOOGLE_WEBSITE": "https://google.com",
+        "MODULE_TYPES": {
+            "VIDEO": "video",
+            "DOCUMENT": "documento",
+            "QUIZ": "cuestionario",
+            "DISCUSSION": "discusión",
+            "EXTERNAL_LINK": "enlace externo"
+        },
+        "EDIT": "Editar",
+        "ORDER": "orden",
+        "ATTACHMENTS": "Archivos adjuntos",
+        "CREATE_ATTACHMENT": "Crear archivo adjunto",
+        "NO_ATTACHMENT": "Aún no hay archivos adjuntos",
+        "CREATING_ATTACHMENT": "Creando archivo adjunto para el módulo",
+        "SAVE_ATTACHMENT": "Guardar archivo adjunto",
+        "ATTACHMENT_SAVED": "Archivo adjunto guardado",
+        "ERROR_SAVING_ATTACHMENT": "Error al guardar el archivo adjunto",
+        "DELETE_DOCUMENT": "¿Seguro que deseas eliminar este documento?",
+        "ATTACHMENT_REMOVED": "Archivo adjunto eliminado",
+        "ERROR_REMOVING_ATTACHMENT": "Error al eliminar el archivo adjunto",
+        "SUBMITTING_CONTENT": "Enviando contenido...",
+        "MODULE_MESSAGE": "Módulo creado con éxito",
+        "ATTACH_VIDEO": "Error al adjuntar el video",
+        "ATTACH_DOCUMENT": "Error al adjuntar el documento",
+        "FAILED_CREATE_MODULE": "Error al crear el módulo"
+    }
 }

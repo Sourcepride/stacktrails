@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { PublicRoutes } from "@/routes";
+import { AppRoutes, PublicRoutes } from "@/routes";
 import { useAppStore } from "@/store";
 import { Button } from "@mui/material";
 import { useTranslations } from "next-intl";
@@ -103,9 +103,9 @@ const Sidebar = () => {
             <ul className="space-y-4">
               {[
                 { href: PublicRoutes.ABOUT, label: t("ABOUT") },
-                { href: "/about", label: t("EXPLORE") },
-                { href: "/contact", label: t("PAID_COURSES") },
-                { href: "/contact", label: t("CREATE") },
+                { href: PublicRoutes.COURSES, label: t("EXPLORE") },
+                { href: PublicRoutes.PAID_COURSES, label: t("PAID_COURSES") },
+                { href: AppRoutes.CREATE_COURSE, label: t("CREATE") },
               ].map((item, idx) => (
                 <li key={idx}>
                   <Link
@@ -148,13 +148,16 @@ const Sidebar = () => {
             ) : (
               <div className="text-center">
                 <p className="text-gray-600 mb-3">Welcome back!</p>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => toggleBar({})}
-                >
-                  Go to Dashboard
-                </Button>
+
+                <Link href={AppRoutes.DASHBOARD} className="block">
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => toggleBar({})}
+                  >
+                    Go to Dashboard
+                  </Button>
+                </Link>
               </div>
             )}
           </div>

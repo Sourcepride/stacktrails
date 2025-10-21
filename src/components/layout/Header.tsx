@@ -25,8 +25,8 @@ const PublicHeader: React.FC<params> = async () => {
           <ul className="flex space-x-8">
             {[
               { href: PublicRoutes.ABOUT, label: t("ABOUT") },
-              { href: "/about", label: t("EXPLORE") },
-              { href: "/contact", label: t("PAID_COURSES") },
+              { href: PublicRoutes.COURSES, label: t("EXPLORE") },
+              { href: PublicRoutes.PAID_COURSES, label: t("PAID_COURSES") },
               { href: AppRoutes.CREATE_COURSE, label: t("CREATE") },
             ].map((item, idx) => (
               <li key={idx} className="relative">

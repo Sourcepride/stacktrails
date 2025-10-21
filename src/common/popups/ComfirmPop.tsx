@@ -3,9 +3,9 @@
 import { Button } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
+import { FaEdit } from "@react-icons/all-files/fa/FaEdit";
 import { useTranslations } from "next-intl";
 import * as React from "react";
-import { FaEdit } from "react-icons/fa";
 
 type props = {
   proceedText?: string;

@@ -4,10 +4,11 @@ import { useUploads } from "@/hooks/useUploads"; // adjust import path
 import { Tooltip } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
+import { IoClose } from "@react-icons/all-files/io5/IoClose";
+import { MdExpandLess } from "@react-icons/all-files/md/MdExpandLess";
+import { MdExpandMore } from "@react-icons/all-files/md/MdExpandMore";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
-import { IoClose } from "react-icons/io5";
-import { MdExpandLess, MdExpandMore } from "react-icons/md";
 
 const UploadProgress: React.FC = () => {
   const t = useTranslations();

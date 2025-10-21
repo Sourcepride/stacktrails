@@ -1,6 +1,6 @@
 "use client";
 
-import { FaStar } from "react-icons/fa";
+import { FaStar } from "@react-icons/all-files/fa/FaStar";
 
 interface StarsProps {
   rating: number;

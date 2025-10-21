@@ -3,11 +3,11 @@
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { CiGlobe } from "@react-icons/all-files/ci/CiGlobe";
 import CountryList from "country-list-with-dial-code-and-flag";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import { CiGlobe } from "react-icons/ci";
 
 const AVAILABLE_LOCALES = ["en", "de", "es", "fr"];
 
