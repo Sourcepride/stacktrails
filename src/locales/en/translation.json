@@ -150,7 +150,9 @@
     },
     "BACKEND_MESSAGES": {
         "ACCOUNT_EXISTS": "Oops! an account with email already exists on our system",
-        "SIGN_IN_ERROR": "Sign in error!"
+        "SIGN_IN_ERROR": "Sign in error!",
+        "PROVIDER_ATTACHED": "Provider is already attached to a different account",
+        "CONNECTION_FAILED": "connection failed!"
     },
     "CONTINUE": "Continue",
     "REPLACE_ACCOUNT": {

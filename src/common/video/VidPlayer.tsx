@@ -80,17 +80,21 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
   const playerRef = useRef<HTMLVideoElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  //   const urlInputRef = useRef<HTMLInputElement | null>(null);
 
   const [state, setState] = useState<PlayerState>(initialState);
-
   const [controlsVisible, setControlsVisible] = useState(true);
+  const [isYouTubeProcessing, setIsYouTubeProcessing] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
+  const retryTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const { type: sourceType } = detectSource(src);
+  const isYouTube = sourceType === "video/youtube";
 
   const showControls = () => {
     setControlsVisible(true);
 
-    // reset timer
     if (hideTimer.current) clearTimeout(hideTimer.current);
     hideTimer.current = setTimeout(() => {
       setControlsVisible(false);
@@ -98,11 +102,11 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
   };
 
   useEffect(() => {
-    // show controls initially
     showControls();
 
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
+      if (retryTimer.current) clearTimeout(retryTimer.current);
     };
   }, []);
 
@@ -110,7 +114,6 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
     const initializePlayer = async () => {
       if (!playerRef.current) return;
 
-      // Clean up existing iframe
       if (iframeRef.current) {
         iframeRef.current.remove();
         iframeRef.current = null;
@@ -120,7 +123,6 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
 
       if (type === "dailymotion") {
         if (containerRef.current) {
-          // Clean up existing iframe (if any)
           if (iframeRef.current) {
             (iframeRef.current as any)?.remove?.();
             iframeRef.current = null;
@@ -145,7 +147,6 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
 
       if (type === "google_drive") {
         if (containerRef.current) {
-          // Clean up existing iframe (if any)
           if (iframeRef.current) {
             (iframeRef.current as any)?.remove?.();
             iframeRef.current = null;
@@ -170,12 +171,10 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
     initializePlayer();
 
     return () => {
-      // Clean up player
       if (playerRef.current) {
         playerRef.current = null;
       }
 
-      // Clean up iframe
       if (iframeRef.current) {
         try {
           iframeRef.current.remove();
@@ -240,7 +239,6 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
 
   const handleProgress = () => {
     const player = playerRef.current;
-    // We only want to update time slider if we are not currently seeking
     if (!player || state.seeking || !player.buffered?.length) return;
 
     console.log("onProgress");
@@ -255,7 +253,6 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
 
   const handleTimeUpdate = () => {
     const player = playerRef.current;
-    // We only want to update time slider if we are not currently seeking
     if (!player || state.seeking) return;
 
     console.log("onTimeUpdate", player.currentTime);
@@ -282,20 +279,90 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
     setState((prevState) => ({ ...prevState, duration: player.duration }));
   };
 
+  const handleError = (e: any) => {
+    console.log("onError", e);
+
+    // Check if this is a YouTube video and if the error indicates processing
+    if (isYouTube && !isYouTubeProcessing) {
+      console.log(
+        "YouTube video may still be processing, will retry in 30 seconds"
+      );
+      setIsYouTubeProcessing(true);
+
+      // Set up retry
+      retryTimer.current = setTimeout(() => {
+        console.log("Retrying YouTube video...");
+        setRetryCount((prev) => prev + 1);
+        setIsYouTubeProcessing(false);
+      }, 30000);
+    }
+  };
+
+  const handleReady = () => {
+    console.log("onReady");
+    // Video is ready, clear any processing state
+    if (isYouTubeProcessing) {
+      setIsYouTubeProcessing(false);
+      if (retryTimer.current) {
+        clearTimeout(retryTimer.current);
+        retryTimer.current = null;
+      }
+    }
+  };
+
   const setPlayerRef = useCallback((player: HTMLVideoElement) => {
     if (!player) return;
     playerRef.current = player;
     console.log(player);
   }, []);
 
-  //   const handleLoadCustomUrl = () => {
-  //     if (urlInputRef.current?.value) {
-  //       setState((prevState) => ({
-  //         ...prevState,
-  //         src: urlInputRef.current?.value,
-  //       }));
-  //     }
-  //   };
+  // Show loading state while YouTube video is processing
+  if (isYouTube && isYouTubeProcessing) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          aspectRatio: "16/9",
+          backgroundColor: "#000",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          borderRadius: "5px",
+        }}
+      >
+        <div
+          style={{
+            width: "40px",
+            height: "40px",
+            border: "4px solid #333",
+            borderTop: "4px solid #fff",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+          }}
+        />
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <p style={{ marginTop: "20px", fontSize: "14px" }}>
+          Video is being processed by YouTube...
+        </p>
+        <p style={{ marginTop: "10px", fontSize: "12px", color: "#888" }}>
+          Retrying in 30 seconds
+        </p>
+        {retryCount > 0 && (
+          <p style={{ marginTop: "5px", fontSize: "12px", color: "#666" }}>
+            Attempt {retryCount + 1}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <ReactPlayerProvider value={{ ...state, setState }}>
@@ -316,6 +383,7 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
         )}
 
         <ReactPlayer
+          key={`player-${retryCount}`}
           src={src}
           ref={setPlayerRef}
           style={{
@@ -338,27 +406,9 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
             youtube: {
               color: "white",
             },
-            // vimeo: {
-            //   color: "ffffff",
-            // },
-            // spotify: {
-            //   preferVideo: true,
-            // },
-            // tiktok: {
-            //   fullscreen_button: true,
-            //   progress_bar: true,
-            //   play_button: true,
-            //   volume_control: true,
-            //   timestamp: false,
-            //   music_info: false,
-            //   description: false,
-            //   rel: false,
-            //   native_context_menu: true,
-            //   closed_caption: false,
-            // },
           }}
           onLoadStart={() => console.log("onLoadStart")}
-          onReady={() => console.log("onReady")}
+          onReady={handleReady}
           onStart={(e) => console.log("onStart", e)}
           onPlay={handlePlay}
           onEnterPictureInPicture={handleEnterPictureInPicture}
@@ -368,7 +418,7 @@ const Player: React.FC<VidPlayerProps> = ({ src }) => {
           onSeeking={(e) => console.log("onSeeking", e)}
           onSeeked={(e) => console.log("onSeeked", e)}
           onEnded={handleEnded}
-          onError={(e) => console.log("onError", e)}
+          onError={handleError}
           onTimeUpdate={handleTimeUpdate}
           onProgress={handleProgress}
           onDurationChange={handleDurationChange}
@@ -383,7 +433,7 @@ const VidPlayer = dynamic(() => Promise.resolve(Player), {
   loading: () => (
     <div
       style={{
-        height: "100%", // Changed to 100% to match parent
+        height: "100%",
         backgroundColor: "#000",
         display: "flex",
         alignItems: "center",

@@ -27,6 +27,15 @@ const QueryMessagesWrapper: React.FC<QueryMessagesWrapperProps> = ({
           </div>
         ),
       },
+      provider_attached_already: {
+        value: t("PROVIDER_ATTACHED"),
+        title: (
+          <div className="flex items-center gap-2">
+            {t("CONNECTION_FAILED")}
+            <IoMdWarning color="#FF9410" width={30} height={30} />
+          </div>
+        ),
+      },
     }),
     [t]
   );

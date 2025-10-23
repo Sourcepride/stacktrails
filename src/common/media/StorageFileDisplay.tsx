@@ -81,8 +81,8 @@ const StorageFileDisplay: React.FC<StorageFileDisplayProps> = ({
   const [viewStyle, setViewStyle] = useState<"grid" | "list">("grid"); //TODO: set in  store and persist
   const providersMap = useMemo(
     () => [
-      { value: DocumentPlatform.GOOGLE_DRIVE, name: "Drive" },
-      { value: DocumentPlatform.DROPBOX, name: "Drop box" },
+      { value: DocumentPlatform.GOOGLE_DRIVE, name: "Google Drive" },
+      { value: DocumentPlatform.DROPBOX, name: "Dropbox" },
     ],
     []
   );

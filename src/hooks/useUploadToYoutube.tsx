@@ -214,6 +214,7 @@ async function batchUploadYouTube(
         setTimeout(() => ctx.removeJob(jobId), 5000);
       } catch (err) {
         console.error("YouTube upload failed for", file.name, err);
+        console.log("==================", (err as any)?.message);
         ctx.updateJob(jobId, { status: "failed" });
         setTimeout(() => ctx.removeJob(jobId), 5000);
       }

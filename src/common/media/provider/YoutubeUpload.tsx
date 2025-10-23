@@ -5,6 +5,7 @@ import { useUploads } from "@/hooks/useUploads";
 import useUploadToYoutube from "@/hooks/useUploadToYoutube";
 import { cacheKeys } from "@/lib/cacheKeys";
 import { listStorageProviders } from "@/lib/http/mediaFunc";
+import { verifyScopes } from "@/lib/utils";
 import { BackendRoutes } from "@/routes";
 import { useAppStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,19 +56,14 @@ const YoutubeUpload: React.FC<YoutubeUploadProps> = ({
   });
 
   useEffect(() => {
-    if (status !== "pending") {
+    const shouldReConsent = async () => {
       const provider = data?.items?.find((v) => v.provider === "google");
 
       if (
         !provider ||
-        !(
-          provider?.scopes?.includes(
-            "https://www.googleapis.com/auth/youtube.upload"
-          ) &&
-          provider?.scopes?.includes(
-            "https://www.googleapis.com/auth/youtube.readonly"
-          )
-        )
+        !(await verifyScopes(
+          "https://www.googleapis.com/auth/youtube.upload,https://www.googleapis.com/auth/youtube.readonly"
+        ))
       ) {
         const url = new URL(BACKEND_API_URL + BackendRoutes.GOOGLE_INCREMENTAL);
         url.searchParams.append("redirect", location.href);
@@ -80,6 +76,10 @@ const YoutubeUpload: React.FC<YoutubeUploadProps> = ({
       }
 
       setIsLoadingProviders(false);
+    };
+
+    if (status !== "pending") {
+      shouldReConsent();
     }
   }, [status]);
 

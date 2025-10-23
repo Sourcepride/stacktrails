@@ -2,6 +2,7 @@ import { BackendRoutes } from "@/routes";
 import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNow } from "date-fns";
 import { twMerge } from "tailwind-merge";
+import { appFetch } from "./appFetch";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -182,4 +183,15 @@ export function extractExternalId(
     default:
       return null;
   }
+}
+
+export async function verifyScopes(scopes: string) {
+  const resp = await appFetch<{ valid: boolean }>(
+    BackendRoutes.VERIFY_SCOPES + `?scopes=${scopes}`
+  );
+  if (resp.status !== 200) {
+    return false;
+  }
+
+  return resp.data.valid;
 }

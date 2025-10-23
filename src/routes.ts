@@ -76,6 +76,7 @@ export class AppRoutes {
 
 export class BackendRoutes {
   static MY_ACCOUNT = "/account";
+  static VERIFY_SCOPES = "/auth/verify-scopes";
   static GITHUB_LOGIN = "/auth/github/login";
   static GOOGLE_LOGIN = "/auth/google/login";
   static GOOGLE_ONE_TAP = "/auth/google-one-tap";
