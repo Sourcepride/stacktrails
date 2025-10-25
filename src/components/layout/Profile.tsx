@@ -87,7 +87,7 @@ export default function Profile({ className }: ProfileProps) {
       if (response.ok) {
         // Close the menu
         setIsOpen(false);
-        // Redirect to login page or home page
+        // Redirect to login page or homepage
         window.location.href = PublicRoutes.LOGIN;
       } else {
         appToast.Error("Logout failed");

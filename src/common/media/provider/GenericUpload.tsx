@@ -1,13 +1,19 @@
 "use client";
 
+import LoadingModal from "@/common/popups/LoadingModal";
 import { DocumentPlatform } from "@/constants";
 import { useUploads } from "@/hooks/useUploads";
 import useUploadToDrive from "@/hooks/useUploadtoDrive";
 import useUploadToDropbox from "@/hooks/useUploadToDropBox";
 import { appToast } from "@/lib/appToast";
+import { cacheKeys } from "@/lib/cacheKeys";
+import { listStorageProviders } from "@/lib/http/mediaFunc";
+import { useAppStore } from "@/store";
 import { Button, LinearProgress, Modal } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { storageCheckOrRedirect } from "../helpers";
 import StorageFileDisplay from "../StorageFileDisplay";
 import FileUploadBox from "./FileUploadBox";
 
@@ -29,6 +35,18 @@ const GenericUpload: React.FC<GenericUploadProps> = ({
   const uploadToDropBox = useUploadToDropbox();
   const { jobs } = useUploads();
   const [isLoading, setIsLoading] = useState(false);
+
+  const { user } = useAppStore((s) => s);
+  const { data, status } = useQuery({
+    queryKey: [cacheKeys.LIST_PROVIDERS, user?.id],
+    queryFn: listStorageProviders,
+  });
+
+  useEffect(() => {
+    if (status === "success") {
+      storageCheckOrRedirect(provider as DocumentPlatform, data, () => {});
+    }
+  }, [status, data]);
 
   // TODO: !Important this should me jobId instead.  should find a way of tracking jobId
   const currentJob = useMemo(
@@ -141,6 +159,7 @@ const GenericUpload: React.FC<GenericUploadProps> = ({
             </div>
           </div>
         )}
+        {status === "pending" && <LoadingModal />}
       </section>
     </Modal>
   );

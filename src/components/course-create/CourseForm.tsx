@@ -10,6 +10,7 @@ import TagsInputField from "@/common/forms/TagsInputField";
 
 import EditorLite from "@/common/markdown/MdEditor";
 import UploadFileModal from "@/common/media/UploadFileModal";
+import LoadingModal from "@/common/popups/LoadingModal";
 import { useRouter } from "@/hooks/useBlockNavigation";
 import { useQueryParam } from "@/hooks/useQueryParams";
 import { appToast } from "@/lib/appToast";
@@ -115,7 +116,7 @@ export default function CourseForm({ course }: params) {
     formState: { errors },
   } = form;
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (data: CourseCreate) => {
       if (slug) return await updateCourseFunction(slug, data);
 
@@ -362,11 +363,12 @@ export default function CourseForm({ course }: params) {
             disableElevation
             fullWidth
             type="submit"
-            disabled={!!Object.keys(errors).length}
+            disabled={!!Object.keys(errors).length || isPending}
           >
             {t("SUBMIT")}
           </Button>
         </div>
+        {isPending && <LoadingModal />}
       </form>
     </FormProvider>
   );
