@@ -33,6 +33,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Next.js app
+        env:
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+          NEXT_PUBLIC_BACKEND_URL: ${{ vars.NEXT_PUBLIC_BACKEND_URL }}
+          NEXT_IMAGE_OPTS_TIMEOUT: ${{ vars.NEXT_IMAGE_OPTS_TIMEOUT }}
+          NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: pnpm build
 
       - name: Create build archive
