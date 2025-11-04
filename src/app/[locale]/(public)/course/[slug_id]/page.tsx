@@ -44,6 +44,9 @@ Promise<Metadata> {
   return {
     title: post.title,
     description: post.short_description,
+    alternates: {
+      canonical: `https://stacktrails.com/course/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.short_description,

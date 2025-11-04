@@ -15,7 +15,7 @@ const UploadFileModal: React.FC<UploadFileModalProps> = ({
 }) => {
   return (
     <Modal open onClose={onClose}>
-      <section className="w-[95%]  max-w-[580px]  p-4 bg-background fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2  rounded-xl  z-50">
+      <section className="w-[95%] max-w-[580px]  p-4 bg-background fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2  rounded-xl  z-50">
         <UploadFile
           {...props}
           callback={(url, provider) => {

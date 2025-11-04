@@ -1,3 +1,4 @@
+import GooglePickerLoader from "@/common/media/GooglePickerLoader";
 import UploadProgress from "@/common/media/UploadProgres";
 import AuthWrapper from "@/components/auth/AuthWrapper";
 import QueryMessagesWrapper from "@/components/auth/QueryMessagesWrapper";
@@ -227,6 +228,7 @@ export default function RootLayout({
           async
           defer
         ></script> */}
+        <GooglePickerLoader />
       </body>
     </html>
   );

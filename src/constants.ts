@@ -15,3 +15,21 @@ export enum MediaType {
   VIDEO = "video",
   OTHER = "other",
 }
+
+export const MIME_TYPE_GROUPS = {
+  document: [
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
+  ],
+  video: [
+    "video/mp4",
+    "video/x-msvideo",
+    "video/quicktime",
+    "video/x-ms-wmv",
+    "video/mpeg",
+    "video/x-matroska",
+    "video/x-flv",
+  ],
+  image: ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
+};

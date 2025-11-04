@@ -5,7 +5,7 @@ import Image from "next/image";
 
 type props = {
   title?: string;
-  message?: string;
+  message?: React.ReactNode;
   width?: number;
   height?: number;
   className?: string;

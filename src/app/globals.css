@@ -115,3 +115,7 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
+
+div.picker-dialog {
+  z-index: 99999 !important;
+}

@@ -1,4 +1,20 @@
 import CenterOnLgScreen from "@/common/utils/CenterOnLgScreen";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions",
+  description:
+    "Review StackTrails’ terms and conditions to understand the rules and responsibilities of using our platform.",
+  alternates: {
+    canonical: "https://stacktrails.com/site/terms-and-conditions",
+  },
+  openGraph: {
+    title: "Terms and Conditions | StackTrails",
+    description:
+      "Learn the terms that govern your use of StackTrails and our services.",
+    url: "https://stacktrails.com/site/terms-and-conditions",
+  },
+};
 
 export default function TermsPage() {
   return (

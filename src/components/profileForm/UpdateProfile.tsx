@@ -22,12 +22,14 @@ import z from "zod";
 
 const optionalString = z.string().optional().or(z.literal(""));
 
-const noUrlHandle = optionalString.refine(
-  (v) => !v || !/^https?:\/\//i.test(v),
-  {
-    message: "Provide a username, not a URL",
+const noUrlHandle = optionalString.superRefine((v, ctx) => {
+  if (v && /^https?:\/\//i.test(v)) {
+    ctx.addIssue({
+      code: "custom", // ✅ no longer uses ZodIssueCode
+      message: "Provide a username, not a URL",
+    });
   }
-);
+});
 
 const schema = z.object({
   username: z.string().min(3),

@@ -1,4 +1,20 @@
 import CenterOnLgScreen from "@/common/utils/CenterOnLgScreen";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Read StackTrails' privacy policy to learn how we protect your personal information and data on our platform.",
+  alternates: {
+    canonical: "https://stacktrails.com/site/privacy-policy",
+  },
+  openGraph: {
+    title: "Privacy Policy | StackTrails",
+    description:
+      "Understand how StackTrails collects, uses, and safeguards your data.",
+    url: "https://stacktrails.com/site/privacy-policy",
+  },
+};
 
 export default async function Page() {
   return (

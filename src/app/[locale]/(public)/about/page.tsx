@@ -1,6 +1,20 @@
-"use client";
-
 import CenterOnLgScreen from "@/common/utils/CenterOnLgScreen";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "Learn about StackTrails — the collaborative learning platform built to make structured, community-driven education accessible to everyone.",
+  alternates: {
+    canonical: "https://stacktrails.com/about",
+  },
+  openGraph: {
+    title: "About StackTrails",
+    description:
+      "Discover the mission behind StackTrails and how we're transforming how communities learn together.",
+    url: "https://stacktrails.com/about",
+  },
+};
 
 export default function Page() {
   return (

@@ -11,6 +11,21 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+// export const metadata: Metadata = {
+//   title: "Contact Us",
+//   description:
+//     "Get in touch with the StackTrails team. We're here to answer your questions, support your learning, and explore partnerships.",
+//   alternates: {
+//     canonical: "https://stacktrails.com/contact",
+//   },
+//   openGraph: {
+//     title: "Contact StackTrails",
+//     description:
+//       "Reach out to StackTrails for support, inquiries, or collaboration opportunities.",
+//     url: "https://stacktrails.com/contact",
+//   },
+// };
+
 export default function Page() {
   const t = useTranslations();
   const [formData, setFormData] = useState<ContactFormData>({

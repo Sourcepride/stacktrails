@@ -138,11 +138,17 @@ function ProfilePage({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
-            { label: "X", value: xHandle },
-            { label: "Instagram", value: instagram },
+            { label: "X", value: xHandle ? `x.com/${xHandle}` : "" },
+            {
+              label: "Instagram",
+              value: instagram ? `instagram.com/${instagram}` : "",
+            },
             { label: "Facebook", value: facebook },
-            { label: "YouTube", value: youtube },
-            { label: "TikTok", value: tiktok },
+            {
+              label: "YouTube",
+              value: youtube ? `youtube.com/@${youtube}` : "",
+            },
+            { label: "TikTok", value: tiktok ? `tiktok.com/@${tiktok}` : "" },
             { label: "Website", value: website },
           ].map((item) => (
             <div key={item.label}>
