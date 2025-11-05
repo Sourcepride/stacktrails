@@ -71,6 +71,19 @@ jobs:
             git fetch origin main
             git merge --ff-only origin/main || git reset --hard origin/main
 
+            export PNPM_HOME="$HOME/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
+
+            # Load Node from NVM
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
+            nvm use --silent 20 || true
+
+            echo "Node version: $(node -v)"
+            echo "pnpm version: $(pnpm -v)"
+            echo "pm2 version: $(pm2 -v)"
+
+
             echo "📦 Installing dependencies..."
             pnpm install --frozen-lockfile
 
