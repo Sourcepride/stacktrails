@@ -9,6 +9,7 @@ jobs:
   deploy:
     if: github.repository == 'Sourcepride/stacktrails'
     runs-on: ubuntu-latest
+    environment: stacktrails
     env:
       NODE_ENV: production
 
@@ -42,6 +43,7 @@ jobs:
           echo "✅ .env.production file created"
 
       - name: Build Next.js app
+
         run: pnpm build
 
       - name: Create build archive
