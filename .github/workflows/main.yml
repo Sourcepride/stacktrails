@@ -1,15 +1,13 @@
 name: Deploy Next.js App (Production)
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true && github.repository == 'Sourcepride/stacktrails'
+    if: github.repository == 'Sourcepride/stacktrails'
     runs-on: ubuntu-latest
     env:
       NODE_ENV: production
@@ -32,18 +30,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Create .env.production file
+        run: |
+          echo "NODE_ENV=production" > .env.production
+          echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" >> .env.production
+          echo "NEXT_PUBLIC_BACKEND_URL=${{ vars.NEXT_PUBLIC_BACKEND_URL }}" >> .env.production
+          echo "NEXT_IMAGE_OPTS_TIMEOUT=${{ vars.NEXT_IMAGE_OPTS_TIMEOUT }}" >> .env.production
+          echo "NEXT_PUBLIC_WS_URL=${{ vars.NEXT_PUBLIC_WS_URL }}" >> .env.production
+          echo "NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}" >> .env.production
+          echo "NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}" >> .env.production
+          echo "✅ .env.production file created"
+
       - name: Build Next.js app
-        env:
-          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
-          NEXT_PUBLIC_BACKEND_URL: ${{ vars.NEXT_PUBLIC_BACKEND_URL }}
-          NEXT_IMAGE_OPTS_TIMEOUT: ${{ vars.NEXT_IMAGE_OPTS_TIMEOUT }}
-          NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
-          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: pnpm build
 
       - name: Create build archive
-        run: tar -czf next-build.tar.gz .next
+        run: tar -czf next-build.tar.gz .next .env.production
 
       - name: Copy build to server
         uses: appleboy/scp-action@v0.1.7
@@ -70,23 +72,13 @@ jobs:
             echo "📦 Installing dependencies..."
             pnpm install --frozen-lockfile
 
-            echo "🗑️  Removing old build..."
+            echo "🗑️  Removing old build and env..."
             rm -rf .next
+            rm -f .env.production
 
             echo "📂 Extracting new build..."
             tar -xzf next-build.tar.gz
             rm next-build.tar.gz
-
-            echo "🔐 Creating environment file..."
-            cat > .env.production << 'EOF'
-            NODE_ENV=production
-            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
-            NEXT_PUBLIC_BACKEND_URL=${{ vars.NEXT_PUBLIC_BACKEND_URL }}
-            NEXT_IMAGE_OPTS_TIMEOUT=${{ vars.NEXT_IMAGE_OPTS_TIMEOUT }}
-            NEXT_PUBLIC_WS_URL=${{ vars.NEXT_PUBLIC_WS_URL }}
-            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
-            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
-            EOF
 
             echo "♻️  Restarting PM2..."
             pm2 reload stacktrails || pm2 start pnpm --name stacktrails -- start
