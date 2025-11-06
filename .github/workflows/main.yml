@@ -40,6 +40,8 @@ jobs:
           echo "NEXT_PUBLIC_WS_URL=${{ vars.NEXT_PUBLIC_WS_URL }}" >> .env.production
           echo "NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}" >> .env.production
           echo "NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}" >> .env.production
+          NEXT_PUBLIC_GOOGLE_API_KEY=${{vars.NEXT_PUBLIC_GOOGLE_API_KEY}} >>  .env.production
+          NEXT_PUBLIC_GOOGLE_APP_ID=${{vars.NEXT_PUBLIC_GOOGLE_APP_ID}} >>  .env.production
           echo "✅ .env.production file created"
 
       - name: Build Next.js app
