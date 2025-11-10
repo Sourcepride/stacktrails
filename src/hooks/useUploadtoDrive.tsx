@@ -170,8 +170,11 @@ async function batchResumableUpload(
   return results;
 }
 
-export async function makeGoogleFilePublic(fileId: string) {
-  let accessToken = await getFreshAccessToken();
+export async function makeGoogleFilePublic(
+  fileId: string,
+  access_token?: string
+) {
+  let accessToken = access_token || (await getFreshAccessToken());
 
   try {
     const res = await fetch(

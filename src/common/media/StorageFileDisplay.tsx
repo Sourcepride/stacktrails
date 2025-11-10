@@ -3,7 +3,11 @@ import { DocumentPlatform } from "@/constants";
 import GeneralStoragePicker from "./picker/GeneralStoragePicker";
 
 type mime_ = "image" | "document" | "video" | "folder";
-type callback_ = (file: FileResp, provider: DocumentPlatform) => void;
+type callback_ = (
+  file: FileResp,
+  provider: DocumentPlatform,
+  accessToken?: string
+) => void;
 
 type StorageFileDisplayProps = {
   onClose: () => void;

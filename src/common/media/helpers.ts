@@ -1,21 +1,21 @@
 import { BACKEND_API_URL, DocumentPlatform } from "@/constants";
 import { appFetch } from "@/lib/appFetch";
+import { verifyScopes } from "@/lib/utils";
 import { BackendRoutes } from "@/routes";
 
-export function storageCheckOrRedirect(
+export async function storageCheckOrRedirect(
   value: DocumentPlatform,
   data: ProviderList,
   callback: () => void
 ) {
   switch (value) {
     case DocumentPlatform.GOOGLE_DRIVE: {
-      const storageExists = data?.items?.find?.(
-        (e) =>
-          e.provider === "google" &&
-          !!e.scopes?.includes("https://www.googleapis.com/auth/drive.file")
-      );
+      const storageExists = data?.items?.find?.((e) => e.provider === "google");
 
-      if (storageExists) {
+      if (
+        storageExists &&
+        (await verifyScopes("https://www.googleapis.com/auth/drive.file"))
+      ) {
         callback?.();
         return;
       }

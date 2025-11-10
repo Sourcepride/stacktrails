@@ -1,14 +1,14 @@
 "use client";
 
-import { makeGoogleFilePublic } from "@/hooks/useUploadtoDrive";
 import { makeFilePublicDropbox } from "@/hooks/useUploadToDropBox";
+import { makeGoogleFilePublic } from "@/hooks/useUploadtoDrive";
 import { appToast } from "@/lib/appToast";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import StorageFileDisplay from "./StorageFileDisplay";
 import { AvailableSources } from "./media.constants";
 import GenericUpload from "./provider/GenericUpload";
 import YoutubeUpload from "./provider/YoutubeUpload";
-import StorageFileDisplay from "./StorageFileDisplay";
 
 type UploadWrapperProps = {
   type: "upload" | "picker";
@@ -57,7 +57,7 @@ const UploadWrapper: React.FC<UploadWrapperProps> = ({
       )}
       {showPicker && (
         <StorageFileDisplay
-          chosenFileHandler={(file, provider) => {
+          chosenFileHandler={(file, provider, accessToken) => {
             if (provider === "dropbox") {
               makeFilePublicDropbox(file.id)
                 .then((v) => {
@@ -65,11 +65,19 @@ const UploadWrapper: React.FC<UploadWrapperProps> = ({
                 })
                 .catch((err) => appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED")));
             } else if (provider === "google_drive") {
-              makeGoogleFilePublic(file.id)
+              makeGoogleFilePublic(file.id, accessToken)
                 .then((v) => {
                   onCompleted(v, provider);
                 })
-                .catch((err) => appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED")));
+                .catch((err) => {
+                  if (/[Pp]ermission/.test(err.message as string)) {
+                    appToast.Error(
+                      "Could not make file public. Try manually doing so from drive or pick file upload"
+                    );
+                    return;
+                  }
+                  appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED"));
+                });
             }
 
             setShow(false);

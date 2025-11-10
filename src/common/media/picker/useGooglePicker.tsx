@@ -12,7 +12,11 @@ import {
 
 type params = {
   showPicker: boolean;
-  onPick: (file: FileResp, provider: DocumentPlatform) => void;
+  onPick: (
+    file: FileResp,
+    provider: DocumentPlatform,
+    accessToken?: string
+  ) => void;
   onClose: () => void;
   mimeType: "image" | "document" | "video" | "folder";
 };
@@ -64,7 +68,8 @@ const useGooglePicker = ({ showPicker, onPick, onClose, mimeType }: params) => {
                 mime_type: v[0].mimeType,
                 url: v[0].url,
               },
-              DocumentPlatform.GOOGLE_DRIVE
+              DocumentPlatform.GOOGLE_DRIVE,
+              accessToken
             );
           },
           onClose,
