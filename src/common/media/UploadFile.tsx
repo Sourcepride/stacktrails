@@ -3,12 +3,10 @@
 import { appToast } from "@/lib/appToast";
 import { Button, TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
-import { AvailableSources } from "./media.constants";
+import { useCallback, useMemo, useRef, useState } from "react";
 import CustomMenu from "./Sources";
 import UploadWrapper from "./UploadWrapper";
-
-//
+import { AvailableSources } from "./media.constants";
 
 type UploadFileProps = {
   accept: AvailableSources[];
@@ -16,10 +14,10 @@ type UploadFileProps = {
   callback: (url: string, provider: AvailableSources) => void;
 };
 
-type plugins = "link" | "pick" | "upload";
+type Plugin = "link" | "pick" | "upload";
 
 type Strategy = {
-  plugins: plugins[];
+  plugins: Plugin[];
   linkValidator?: (v: string) => boolean;
 };
 
@@ -59,72 +57,99 @@ const strategies: Record<AvailableSources, Strategy> = {
 const UploadFile: React.FC<UploadFileProps> = ({
   accept,
   callback,
-  mimeType,
+  mimeType = "document",
 }) => {
   const t = useTranslations();
-  const [error, setError] = useState("");
   const [source, setSource] = useState<AvailableSources>(accept[0]);
 
-  const uploadedCallback = (url: string, plugin: plugins) => {
-    if (plugin === "link") {
-      const validator = strategies[source]?.linkValidator;
+  const currentStrategy = useMemo(() => strategies[source], [source]);
 
-      if (validator && !validator(url)) {
-        appToast.Error(t("UPLOAD.INVALID_LINK"));
-        return;
+  const plugins = useMemo(() => currentStrategy.plugins, [currentStrategy]);
+
+  const handleSourceChange = useCallback((value: string) => {
+    setSource(value as AvailableSources);
+  }, []);
+
+  const uploadedCallback = useCallback(
+    (url: string, plugin: Plugin) => {
+      if (plugin === "link") {
+        const validator = currentStrategy?.linkValidator;
+
+        if (validator && !validator(url)) {
+          appToast.Error(t("UPLOAD.INVALID_LINK"));
+          return;
+        }
       }
-    }
 
-    callback(url, source);
-  };
+      callback(url, source);
+    },
+    [callback, source, currentStrategy, t]
+  );
 
-  const plugins = strategies[source].plugins;
+  const handleUploadComplete = useCallback(
+    (url: string) => {
+      uploadedCallback(url, "upload");
+    },
+    [uploadedCallback]
+  );
+
+  const handlePickComplete = useCallback(
+    (url: string) => {
+      uploadedCallback(url, "pick");
+    },
+    [uploadedCallback]
+  );
+
+  const handleLinkSubmit = useCallback(
+    (url: string) => {
+      uploadedCallback(url, "link");
+    },
+    [uploadedCallback]
+  );
+
+  const showMultipleOptions = plugins.length > 1;
 
   return (
-    <div className="rounded-xl bg-background ">
+    <div className="rounded-xl bg-background">
       <div className="py-4">
         <CustomMenu
-          callback={(value: any) => setSource(value)}
+          callback={handleSourceChange}
           defaultVal={source}
           sources={accept}
         />
       </div>
 
       <div className="flex flex-col gap-4">
-        {plugins.length > 1 && (
+        {showMultipleOptions && (
           <small className="text-orange-500 font-bold">Choose any option</small>
         )}
-        {plugins.map((val, index) => (
-          <div className="" key={val}>
-            {val === "upload" && (
+        {plugins.map((plugin, index) => (
+          <div key={plugin}>
+            {plugin === "upload" && (
               <UploadWrapper
-                onCompleted={(url) => uploadedCallback(url, "upload")}
+                onCompleted={handleUploadComplete}
                 type="upload"
                 provider={source}
-                mimeType={mimeType || "document"}
+                mimeType={mimeType}
               />
             )}
-            {plugins.length > 1 && index < plugins.length - 1 ? (
+            {showMultipleOptions && index < plugins.length - 1 && (
               <div className="font-bold text-center pt-4 !uppercase">
                 {t("AUTH.OR")}
               </div>
-            ) : (
-              ""
             )}
-            {val === "pick" && (
+            {plugin === "pick" && (
               <UploadWrapper
-                onCompleted={(url) => uploadedCallback(url, "pick")}
+                onCompleted={handlePickComplete}
                 type="picker"
                 provider={source}
-                mimeType={mimeType || "document"}
+                mimeType={mimeType}
               />
             )}
-            {val === "link" && (
+            {plugin === "link" && (
               <LinkInput
-                callback={(v) => {
-                  uploadedCallback(v, "link");
-                }}
-                validator={strategies[source]?.linkValidator}
+                callback={handleLinkSubmit}
+                validator={currentStrategy?.linkValidator}
               />
             )}
           </div>
@@ -136,47 +161,50 @@ const UploadFile: React.FC<UploadFileProps> = ({
 
 export default UploadFile;
 
-function LinkInput({
-  callback,
-  validator,
-}: {
+type LinkInputProps = {
   callback: (url: string) => void;
   validator?: (v: string) => boolean;
-}) {
+};
+
+function LinkInput({ callback, validator }: LinkInputProps) {
   const [hasError, setHasError] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
   const t = useTranslations();
 
-  const submitHandler = () => {
+  const submitHandler = useCallback(() => {
     if (!ref.current) {
-      return appToast.Error("An error occurred! Reload page to fix.");
+      appToast.Error("An error occurred! Reload page to fix.");
+      return;
     }
 
-    if (validator && !validator(ref.current.value)) {
+    const url = ref.current.value.trim();
+
+    if (validator && !validator(url)) {
       setHasError(true);
       return;
     }
 
     setHasError(false);
-    setDisabled(true); // disable input after success
-    callback(ref.current.value);
+    setDisabled(true);
+    callback(url);
     appToast.Success(t("LINK_SUBMITTED"));
-  };
+  }, [callback, validator, t]);
 
-  const enableEditing = () => {
-    setDisabled(false); // allow editing again
-  };
+  const enableEditing = useCallback(() => {
+    setDisabled(false);
+    setHasError(false);
+  }, []);
 
   return (
-    <div className="">
+    <div>
       <div className="flex items-center gap-4">
         <TextField
           inputRef={ref}
           fullWidth
           disabled={disabled}
-          className=""
           placeholder={t("UPLOAD.LINK")}
+          error={hasError}
         />
 
         {!disabled ? (
@@ -199,9 +227,11 @@ function LinkInput({
           </Button>
         )}
       </div>
-      <div className="text-orange-500">
-        {hasError && t("UPLOAD.INVALID_LINK")}
-      </div>
+      {hasError && (
+        <div className="text-orange-500 text-sm mt-1">
+          {t("UPLOAD.INVALID_LINK")}
+        </div>
+      )}
     </div>
   );
 }

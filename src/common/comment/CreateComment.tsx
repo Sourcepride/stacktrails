@@ -12,6 +12,7 @@ import { useState } from "react";
 type CreateCommentProps = {
   courseId: string;
   replyToId?: string;
+  rootParentId?: string;
   onSubmit?: (text: string) => void;
   cancel?: () => void;
 };
@@ -19,7 +20,7 @@ type CreateCommentProps = {
 const CreateComment: React.FC<CreateCommentProps> = ({
   courseId,
   replyToId,
-
+  rootParentId,
   cancel,
 }) => {
   const t = useTranslations();
@@ -34,12 +35,30 @@ const CreateComment: React.FC<CreateCommentProps> = ({
       setText("");
       setSubmitting(false);
 
-      queryClient.invalidateQueries({
-        queryKey: [cacheKeys.COMMENT_REPLIES, replyToId],
-      });
+      if (replyToId) {
+        // Invalidate replies for the immediate parent
+        queryClient.invalidateQueries({
+          queryKey: [cacheKeys.COMMENT_REPLIES, replyToId],
+        });
+
+        // If this is a nested reply (replying to a reply), also invalidate
+        // the root parent's replies query to ensure the nested reply appears
+        // in the root parent's replies list
+        if (rootParentId && rootParentId !== replyToId) {
+          queryClient.invalidateQueries({
+            queryKey: [cacheKeys.COMMENT_REPLIES, rootParentId],
+          });
+        }
+      }
+
       queryClient.invalidateQueries({
         queryKey: [cacheKeys.COURSE_COMMENT, courseId],
       });
+
+      // Close the reply input box automatically after successful reply creation
+      if (replyToId && cancel) {
+        cancel();
+      }
     },
     onError: () => {
       setSubmitting(false);

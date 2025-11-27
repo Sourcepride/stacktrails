@@ -8,7 +8,14 @@ import { AppRoutes, BackendRoutes } from "@/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Checkbox } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { createContext, useCallback, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 import LoadingModal from "@/common/popups/LoadingModal";
@@ -27,10 +34,14 @@ type contentType =
   | ({ type: "video" } & Omit<CreateVideoContent, "module_id">)
   | ({ type: "document" } & Omit<CreateDocumentContent, "module_id">);
 
-export const ContentProvider = createContext<{
+type ContentContextType = {
   setContentData: (value: contentType) => void;
   contentData?: contentType;
-}>({} as any);
+};
+
+export const ContentProvider = createContext<ContentContextType>({
+  setContentData: () => {},
+});
 
 const moduleType = [
   "video",
@@ -62,51 +73,66 @@ export default function ModuleForm({
   module?: FullModule;
   sections: FullSection;
 }) {
-  const { id: module_id } = module || {};
+  const module_id = module?.id;
   const router = useRouter();
+  const t = useTranslations();
+  const queryClient = useQueryClient();
+
+  const defaultValues = useMemo(
+    () => ({
+      module_type: (module?.module_type ?? "video") as z.infer<
+        typeof schema
+      >["module_type"],
+      content_data: module?.content_data ?? {},
+      description: module?.description ?? "",
+      estimated_duration_minutes: module?.estimated_duration_minutes,
+      is_required: module?.is_required ?? false,
+      order_index: module?.order_index,
+      prerequisites: module?.prerequisites ?? [],
+      settings: module?.settings ?? {},
+      title: module?.title ?? "",
+    }),
+    [module]
+  );
+
   const form = useForm<z.infer<typeof schema>>({
-    defaultValues: {
-      module_type: module ? module.module_type : "video",
-      content_data: module ? module.content_data : {},
-      description: module ? module.description : "",
-      estimated_duration_minutes: module
-        ? module.estimated_duration_minutes
-        : undefined,
-      is_required: module ? module.is_required : false,
-      order_index: module ? module.order_index : undefined,
-      prerequisites: module ? module.prerequisites : [],
-      settings: module ? module.settings : {},
-      title: module ? module.title : "",
-    },
+    defaultValues,
     resolver: zodResolver(schema),
   });
 
-  const initContent = module
-    ? module.module_type === "document"
-      ? {
-          type: "document",
-          embed_url: module.document_content.embed_url,
-          external_file_id: module.document_content.external_file_id,
-          file_url: module.document_content.file_url,
-          platform: module.document_content.platform,
-          file_name: module.document_content.file_name,
-          file_type: module.document_content.file_type,
-        }
-      : {
-          type: "video",
-          embed_url: module.video_content.embed_url,
-          external_video_id: module.video_content.external_video_id,
-          video_url: module.video_content.video_url,
-          platform: module.video_content.platform,
-        }
-    : undefined;
+  const initContent = useMemo<contentType | undefined>(() => {
+    if (!module) return undefined;
 
-  const [contentData, setContentData] = useState<contentType>(
-    initContent as any
+    if (module.module_type === "document") {
+      return {
+        type: "document",
+        embed_url: module.document_content.embed_url,
+        external_file_id: module.document_content.external_file_id,
+        file_url: module.document_content.file_url,
+        platform: module.document_content
+          .platform as CreateDocumentContent["platform"],
+        file_name: module.document_content.file_name,
+        file_type: module.document_content.file_type,
+      } as contentType;
+    }
+
+    if (module.module_type === "video") {
+      return {
+        type: "video",
+        embed_url: module.video_content.embed_url,
+        external_video_id: module.video_content.external_video_id,
+        video_url: module.video_content.video_url,
+        platform: module.video_content
+          .platform as CreateVideoContent["platform"],
+      } as contentType;
+    }
+
+    return undefined;
+  }, [module]);
+
+  const [contentData, setContentData] = useState<contentType | undefined>(
+    initContent
   );
-
-  const t = useTranslations();
-  const queryClient = useQueryClient();
 
   const {
     control,
@@ -116,8 +142,14 @@ export default function ModuleForm({
     formState: { errors },
   } = form;
 
+  const moduleType = watch("module_type");
+  const contentDataContent = watch("content_data.content");
+
   const getAvailableIndex = useCallback(
-    (modules: FullModule[], currentOrder?: number) => {
+    (
+      modules: FullModule[],
+      currentOrder?: number
+    ): Array<[number, boolean]> => {
       if (modules.length < 1) return [[1, true]];
 
       const available = new Map(
@@ -130,9 +162,34 @@ export default function ModuleForm({
         }
       });
 
-      return available.entries();
+      return Array.from(available.entries());
     },
     []
+  );
+
+  const orderIndexOptions = useMemo(
+    () =>
+      Array.from(getAvailableIndex(sections.modules, module?.order_index)).map(
+        ([value]) => ({
+          text: value.toString(),
+          value: value,
+        })
+      ),
+    [getAvailableIndex, sections.modules, module?.order_index]
+  );
+
+  const moduleTypeOptions = useMemo(
+    () =>
+      [
+        t("MODULE.MODULE_TYPES.VIDEO"),
+        t("MODULE.MODULE_TYPES.DOCUMENT"),
+        t("MODULE.MODULE_TYPES.DISCUSSION"),
+        t("MODULE.MODULE_TYPES.EXTERNAL_LINK"),
+      ].map((value) => ({
+        text: value.toString(),
+        value: value,
+      })),
+    [t]
   );
 
   const { mutate, isPending } = useMutation({
@@ -150,12 +207,12 @@ export default function ModuleForm({
     },
   });
 
-  const revalidateAndRedirect = () => {
+  const revalidateAndRedirect = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: [cacheKeys.COURSE_DETAIL, section_id],
     });
     router.push(AppRoutes.SECTION_MODULES(section_id));
-  };
+  }, [queryClient, section_id, router]);
 
   const { mutate: mutateDocument, isPending: documentIsPending } = useMutation({
     mutationFn: async ({
@@ -166,16 +223,14 @@ export default function ModuleForm({
       id?: string;
     }): Promise<DocumentContent> => {
       const url = module_id
-        ? BackendRoutes.UPDATE_DOCUMENT(id as any)
+        ? BackendRoutes.UPDATE_DOCUMENT(id!)
         : BackendRoutes.CREATE_DOCUMENT;
       const reqFunc = module_id ? appAxios.patch : appAxios.post;
 
       return (await reqFunc(url, data)).data;
     },
 
-    onSuccess: () => {
-      revalidateAndRedirect();
-    },
+    onSuccess: revalidateAndRedirect,
     onError() {
       appToast.Error(t("MODULE.ATTACH_DOCUMENT"));
     },
@@ -190,16 +245,14 @@ export default function ModuleForm({
       id?: string;
     }): Promise<VideoContent> => {
       const url = module_id
-        ? BackendRoutes.UPDATE_VIDEO(id as any)
+        ? BackendRoutes.UPDATE_VIDEO(id!)
         : BackendRoutes.CREATE_VIDEO;
       const reqFunc = module_id ? appAxios.patch : appAxios.post;
 
       return (await reqFunc(url, data)).data;
     },
 
-    onSuccess: () => {
-      revalidateAndRedirect();
-    },
+    onSuccess: revalidateAndRedirect,
 
     onError() {
       appToast.Error(t("MODULE.ATTACH_VIDEO"));
@@ -222,6 +275,7 @@ export default function ModuleForm({
       {
         onSuccess(data) {
           if (contentData) appToast.Info(t("MODULE.SUBMITTING_CONTENT"));
+
           if (contentData?.type === "video") {
             mutateVideo({
               data: {
@@ -256,197 +310,174 @@ export default function ModuleForm({
   });
 
   const isSubmitting = isPending || documentIsPending || videoIsPending;
+
+  const breadcrumbs = useMemo(
+    () => [
+      {
+        name: t("SECTIONS.COURSE_DETAILS"),
+        to: AppRoutes.getCreatedCourseRoute(sections.course.slug),
+      },
+      {
+        name: sections.title,
+        to: AppRoutes.CREATED_COURSE_SECTION(sections.course.slug),
+      },
+      {
+        name: t("MODULE.MODULES"),
+        to: AppRoutes.SECTION_MODULES(sections.id),
+      },
+      ...(module_id
+        ? [
+            {
+              name: t("MODULE.UPDATE"),
+              to: AppRoutes.EDIT_MODULE(sections.id, module_id),
+            },
+          ]
+        : [
+            {
+              name: t("MODULE.CREATE"),
+              to: AppRoutes.getCreateModuleRoute(sections.id),
+            },
+          ]),
+    ],
+    [t, sections.course.slug, sections.title, sections.id, module_id]
+  );
+
+  // Clear contentData when module_type changes (only in create mode)
+  const prevModuleTypeRef = useRef(moduleType);
+  useEffect(() => {
+    if (!module_id && moduleType !== prevModuleTypeRef.current) {
+      setContentData(undefined);
+      prevModuleTypeRef.current = moduleType;
+    }
+  }, [moduleType, module_id]);
+
+  const handleContentDataChange = useCallback(
+    (data: string) => {
+      setValue("content_data.content", data, {
+        shouldValidate: true,
+      });
+    },
+    [setValue]
+  );
+
+  const handleContentError = useCallback(
+    (message: string) => {
+      form.setError("content_data.content", {
+        message,
+        type: "onChange",
+      });
+    },
+    [form]
+  );
+
   return (
-    <>
-      <div className="py-5 px-4">
-        <AppLinkBreadCrumbs
-          links={[
-            {
-              name: t("SECTIONS.COURSE_DETAILS"),
-              to: AppRoutes.getCreatedCourseRoute(sections.course.slug),
-            },
-            {
-              name: `${sections.title}`,
-              to: AppRoutes.CREATED_COURSE_SECTION(sections.course.slug),
-            },
-            {
-              name: t("MODULE.MODULES"),
-              to: AppRoutes.SECTION_MODULES(sections.id),
-            },
-            ...(module_id
-              ? [
-                  {
-                    name: t("MODULE.UPDATE"),
-                    to: AppRoutes.EDIT_MODULE(sections.id, module_id),
-                  },
-                ]
-              : [
-                  {
-                    name: t("MODULE.CREATE"),
-                    to: AppRoutes.getCreateModuleRoute(sections.id),
-                  },
-                ]),
-          ]}
-        />
-
-        <div></div>
-        <ContentProvider value={{ setContentData, contentData }}>
-          <FormProvider {...form}>
-            <form className="space-y-8" onSubmit={handleCreate}>
-              <div className="w-full flex flex-col gap-4 lg:flex-row">
-                <AppTextField
-                  control={control}
-                  name="title"
-                  fullWidth
-                  placeholder={t("MODULE.TITLE")}
-                />
-                <AppTextField
-                  control={control}
-                  name="description"
-                  fullWidth
-                  placeholder={t("MODULE.DESCRIPTION")}
-                />
-              </div>
-
-              <AppSelectField
-                control={control}
-                name="order_index"
-                id="order_index"
-                label={
-                  <div className="text-[#111213]">{t("SECTIONS.ORDER")}</div>
-                }
-                options={Array.from(
-                  getAvailableIndex(sections.modules, module?.order_index)
-                ).map(([value, _]) => ({
-                  text: value.toString(),
-                  value: value,
-                }))}
-                message={errors.order_index?.message}
-              />
-
-              <div>
-                <h2 className="text-xl font-bold py-3">
-                  {t("MODULE.PREREQUISITES")}
-                </h2>
-                <StringArrayInput name="prerequisites" />
-              </div>
-
+    <div className="py-5 px-4">
+      <AppLinkBreadCrumbs links={breadcrumbs} />
+      <ContentProvider value={{ setContentData, contentData }}>
+        <FormProvider {...form}>
+          <form className="space-y-8" onSubmit={handleCreate}>
+            <div className="w-full flex flex-col gap-4 lg:flex-row">
               <AppTextField
-                fullWidth
                 control={control}
-                name="estimated_duration_minutes"
-                placeholder={t("SECTIONS.ESTIMATE_DURATION")}
-                message={errors.estimated_duration_minutes?.message}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : Number(e.target.value);
-
-                  if (!Number.isNaN(value))
-                    setValue("estimated_duration_minutes", value, {
-                      shouldValidate: true,
-                    });
-                }}
+                name="title"
+                fullWidth
+                placeholder={t("MODULE.TITLE")}
               />
+              <AppTextField
+                control={control}
+                name="description"
+                fullWidth
+                placeholder={t("MODULE.DESCRIPTION")}
+              />
+            </div>
 
-              <div className="flex items-center gap-4">
-                <h5>{t("MODULE.REQUIRED")}</h5>
-                <div>
-                  <Checkbox {...register("is_required")} />
-                </div>
+            <AppSelectField
+              control={control}
+              name="order_index"
+              id="order_index"
+              label={
+                <div className="text-[#111213]">{t("SECTIONS.ORDER")}</div>
+              }
+              options={orderIndexOptions}
+              message={errors.order_index?.message}
+            />
+
+            <div>
+              <h2 className="text-xl font-bold py-3">
+                {t("MODULE.PREREQUISITES")}
+              </h2>
+              <StringArrayInput name="prerequisites" />
+            </div>
+
+            <AppTextField
+              fullWidth
+              control={control}
+              name="estimated_duration_minutes"
+              placeholder={t("SECTIONS.ESTIMATE_DURATION")}
+              message={errors.estimated_duration_minutes?.message}
+              onChange={(e) => {
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
+
+                if (!Number.isNaN(value)) {
+                  setValue("estimated_duration_minutes", value, {
+                    shouldValidate: true,
+                  });
+                }
+              }}
+            />
+
+            <div className="flex items-center gap-4">
+              <h5>{t("MODULE.REQUIRED")}</h5>
+              <div>
+                <Checkbox {...register("is_required")} />
               </div>
+            </div>
 
-              {!module_id && (
-                <div>
-                  <AppSelectField
-                    control={control}
-                    name="module_type"
-                    id="module_type"
-                    label={
-                      <div className="text-[#111213]">
-                        {t("MODULE.MODULE_TYPE")}
-                      </div>
-                    }
-                    options={[
-                      t("MODULE.MODULE_TYPES.VIDEO"),
-                      t("MODULE.MODULE_TYPES.DOCUMENT"),
-                      t("MODULE.MODULE_TYPES.DISCUSSION"),
-                      t("MODULE.MODULE_TYPES.EXTERNAL_LINK"),
-                    ].map((value) => ({
-                      text: value.toString(),
-                      value: value,
-                    }))}
-                    message={errors.prerequisites?.message}
-                    onChange={(v) => {
-                      setValue("module_type", v.target.value as any, {
-                        shouldValidate: true,
-                      });
-                      setContentData(undefined as any);
-                    }}
-                  />
-                </div>
+            {!module_id && (
+              <div>
+                <AppSelectField
+                  control={control}
+                  name="module_type"
+                  id="module_type"
+                  label={
+                    <div className="text-[#111213]">
+                      {t("MODULE.MODULE_TYPE")}
+                    </div>
+                  }
+                  options={moduleTypeOptions}
+                  message={errors.module_type?.message}
+                />
+              </div>
+            )}
+            <div>
+              {moduleType === "video" && <VideoUpload />}
+              {moduleType === "document" && <DocumentUpload />}
+              {moduleType === "discussion" && (
+                <DiscussSections
+                  value={contentDataContent}
+                  setContent={handleContentDataChange}
+                />
               )}
-              <div>
-                <div
-                  className={`hidden ${
-                    watch("module_type") === "video" && "!block"
-                  }`}
-                >
-                  <VideoUpload />
-                </div>
-                <div
-                  className={`hidden ${
-                    watch("module_type") === "document" && "!block"
-                  }`}
-                >
-                  <DocumentUpload />
-                </div>
-                <div
-                  className={`hidden ${
-                    watch("module_type") === "discussion" && "!block"
-                  }`}
-                >
-                  <DiscussSections
-                    value={watch("content_data.content")}
-                    setContent={(data: string) =>
-                      setValue("content_data.content", data, {
-                        shouldValidate: true,
-                      })
-                    }
-                  />
-                </div>
-                <div
-                  className={`hidden ${
-                    watch("module_type") === "external_link" && "!block"
-                  }`}
-                >
-                  <ExternalLink
-                    value={watch("content_data.content")}
-                    setContent={(data: string) =>
-                      setValue("content_data.content", data, {
-                        shouldValidate: true,
-                      })
-                    }
-                    setError={(data: string) =>
-                      form.setError("content_data.content", {
-                        message: data,
-                        type: "onChange",
-                      })
-                    }
-                    error={errors.content_data?.content?.message}
-                  />
-                </div>
-              </div>
+              {moduleType === "external_link" && (
+                <ExternalLink
+                  value={contentDataContent}
+                  setContent={handleContentDataChange}
+                  setError={handleContentError}
+                  error={errors.content_data?.content?.message}
+                />
+              )}
+            </div>
 
-              <div>
-                <Button className="w-full lg:!w-auto" type="submit">
-                  {module_id ? t("UPDATE") : t("SUBMIT")}
-                </Button>
-              </div>
-            </form>
-          </FormProvider>
-        </ContentProvider>
-        {isSubmitting && <LoadingModal />}
-      </div>
-    </>
+            <div>
+              <Button className="w-full lg:!w-auto" type="submit">
+                {module_id ? t("UPDATE") : t("SUBMIT")}
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
+      </ContentProvider>
+      {isSubmitting && <LoadingModal />}
+    </div>
   );
 }

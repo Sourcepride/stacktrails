@@ -23,9 +23,10 @@ import CreateComment from "./CreateComment";
 
 type CommentProps = {
   data: CourseComment;
+  rootParentId?: string;
 };
 
-const CommentMain: React.FC<CommentProps> = ({ data }) => {
+const CommentMain: React.FC<CommentProps> = ({ data, rootParentId }) => {
   const t = useTranslations();
   const queryClient = useQueryClient();
 
@@ -116,6 +117,7 @@ const CommentMain: React.FC<CommentProps> = ({ data }) => {
             <CreateComment
               courseId={data.course_id}
               replyToId={data.id}
+              rootParentId={rootParentId || data.id}
               cancel={() => setShowCreate(false)}
             />
           </div>
@@ -180,7 +182,11 @@ function CommentReplies({ commentId }: { commentId: string }) {
       {data.pages.map((page, i) => (
         <div key={"page_replies__" + i + commentId} className="">
           {page.items.map((comment) => (
-            <CommentMain key={comment.id} data={comment} />
+            <CommentMain
+              key={comment.id}
+              data={comment}
+              rootParentId={commentId}
+            />
           ))}
         </div>
       ))}

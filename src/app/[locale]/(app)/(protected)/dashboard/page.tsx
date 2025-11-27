@@ -4,9 +4,10 @@ import StatCard from "@/common/cards/StatCard";
 import WelcomeCard from "@/common/cards/WelcomeCard";
 import CenterOnLgScreen from "@/common/utils/CenterOnLgScreen";
 import LoadingComponent from "@/common/utils/LoadingComponent";
+import { Link } from "@/i18n/navigation";
 import appAxios from "@/lib/axiosClient";
 import { cacheKeys } from "@/lib/cacheKeys";
-import { BackendRoutes } from "@/routes";
+import { AppRoutes, BackendRoutes } from "@/routes";
 import { useAppStore } from "@/store";
 import { Button } from "@mui/material";
 import { FaCheckCircle } from "@react-icons/all-files/fa/FaCheckCircle";
@@ -52,9 +53,11 @@ export default function Page() {
           <div className=" space-y-8">
             <WelcomeCard />
             <div className="w-full flex items-center md:justify-end">
-              <Button className="!capitalize">
-                {t("PUBLIC_MAIN.CREATE_COURSE")}
-              </Button>
+              <Link href={AppRoutes.CREATE_COURSE}>
+                <Button className="!capitalize">
+                  {t("PUBLIC_MAIN.CREATE_COURSE")}
+                </Button>
+              </Link>
             </div>
             <div className="flex flex-col gap-6 lg:flex-row">
               <StatCard

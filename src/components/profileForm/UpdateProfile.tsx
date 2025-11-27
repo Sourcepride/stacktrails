@@ -55,20 +55,22 @@ const LANGUAGES = routing.locales.map((code) => ({
 
 const UpdateProfile: React.FC<UpdateProfileProps> = ({ onClose }) => {
   const t = useTranslations();
-  const { user, currentProfile, setCurrentProfile } = useAppStore((s) => s);
+  const { user, currentProfile, setCurrentProfile, setUserData } = useAppStore(
+    (s) => s
+  );
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       username: user?.username || "",
       display_name: currentProfile?.display_name || "",
       bio: currentProfile?.bio || "",
-      language: undefined,
-      x: currentProfile?.x,
-      youtube: currentProfile?.youtube,
-      facebook: currentProfile?.facebook,
-      tiktok: currentProfile?.tiktok,
-      website: currentProfile?.website,
-      instagram: currentProfile?.instagram,
+      language: currentProfile?.language || "",
+      x: currentProfile?.x || "",
+      youtube: currentProfile?.youtube || "",
+      facebook: currentProfile?.facebook || "",
+      tiktok: currentProfile?.tiktok || "",
+      website: currentProfile?.website || "",
+      instagram: currentProfile?.instagram || "",
     },
     resolver: zodResolver(schema),
   });
@@ -84,25 +86,6 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onClose }) => {
 
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (
-      data: Omit<Profile, "account_id" | "id" | "username">
-    ) => {
-      const resp = await appAxios.patch(
-        BackendRoutes.USER_PROFILE(user?.username as any),
-        data
-      );
-      return resp.data;
-    },
-    onSuccess(data) {
-      setCurrentProfile({ ...currentProfile, ...data });
-      appToast.Success(t("PROFILE_UPDATED"));
-      queryClient.invalidateQueries({ queryKey: [cacheKeys.MY_ACCOUNT] });
-    },
-    onError() {
-      appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED"));
-    },
-  });
   const { mutate: updateUsername, isPending: isUpdatingUsername } = useMutation(
     {
       mutationFn: async (username: string) => {
@@ -112,7 +95,11 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onClose }) => {
         );
         return resp.data;
       },
-      onSuccess() {
+      onSuccess(_, newUsername) {
+        // Update user object in store immediately with new username
+        if (user) {
+          setUserData({ ...user, username: newUsername });
+        }
         appToast.Success(t("USERNAME_UPDATED"));
         queryClient.invalidateQueries({ queryKey: [cacheKeys.MY_ACCOUNT] });
       },
@@ -121,6 +108,31 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onClose }) => {
       },
     }
   );
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async ({
+      data,
+      username,
+    }: {
+      data: Omit<Profile, "account_id" | "id" | "username">;
+      username: string;
+    }) => {
+      const resp = await appAxios.patch(
+        BackendRoutes.USER_PROFILE(username),
+        data
+      );
+      return resp.data;
+    },
+    onSuccess(data) {
+      setCurrentProfile({ ...currentProfile, ...data });
+      appToast.Success(t("PROFILE_UPDATED"));
+      queryClient.invalidateQueries({ queryKey: [cacheKeys.MY_ACCOUNT] });
+      onClose();
+    },
+    onError() {
+      appToast.Error(t("EXCEPTIONS.ERROR_OCCURRED"));
+    },
+  });
 
   async function checkUsernameAvailability(username: string): Promise<boolean> {
     try {
@@ -168,8 +180,21 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onClose }) => {
   const onSubmit = handleSubmit(async (values) => {
     const { username, ...others } = values;
 
-    mutate(others);
-    if (username !== user?.username) updateUsername(username);
+    // If username is changing, update it first, then update profile
+    if (username !== user?.username) {
+      updateUsername(username, {
+        onSuccess: () => {
+          // After username is updated, update the profile with the new username
+          mutate({ data: others, username });
+        },
+        onError: () => {
+          // If username update fails, don't update profile
+        },
+      });
+    } else {
+      // If username hasn't changed, just update profile with current username
+      mutate({ data: others, username: username || user?.username || "" });
+    }
   });
 
   const isLoading = isPending || isUpdatingUsername;

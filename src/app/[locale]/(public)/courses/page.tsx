@@ -93,7 +93,7 @@ export default function Page() {
     if (updated.length > 0) params.set("tags", updated.join(","));
     else params.delete("tags");
 
-    router.push(`/explore?${params.toString()}`, { scroll: false });
+    router.push(`/courses?${params.toString()}`, { scroll: false });
   };
 
   // Search handler

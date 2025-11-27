@@ -3,7 +3,7 @@ import { cacheKeys } from "@/lib/cacheKeys";
 import { listStorageProviders } from "@/lib/http/mediaFunc";
 import { useAppStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   getFreshGoogleAccessToken,
   openPicker,
@@ -49,9 +49,25 @@ const useGooglePicker = ({ showPicker, onPick, onClose, mimeType }: params) => {
     enabled: showPicker,
   });
 
+  const hasOpenedPickerRef = useRef(false);
+  const onPickRef = useRef(onPick);
+  const onCloseRef = useRef(onClose);
+
+  // Keep refs updated
   useEffect(() => {
-    if (!showPicker) return;
+    onPickRef.current = onPick;
+    onCloseRef.current = onClose;
+  }, [onPick, onClose]);
+
+  useEffect(() => {
+    if (!showPicker) {
+      hasOpenedPickerRef.current = false;
+      return;
+    }
     if (status !== "success") return;
+    if (hasOpenedPickerRef.current) return; // Prevent double opening
+
+    hasOpenedPickerRef.current = true;
 
     storageCheckOrRedirect(DocumentPlatform.GOOGLE_DRIVE, data, () => {
       const func = async () => {
@@ -60,7 +76,7 @@ const useGooglePicker = ({ showPicker, onPick, onClose, mimeType }: params) => {
           accessToken,
           (v: PickerResp[]) => {
             if (v.length < 1) return;
-            onPick(
+            onPickRef.current(
               {
                 id: v[0].id,
                 name: v[0].name,
@@ -72,7 +88,10 @@ const useGooglePicker = ({ showPicker, onPick, onClose, mimeType }: params) => {
               accessToken
             );
           },
-          onClose,
+          () => {
+            hasOpenedPickerRef.current = false;
+            onCloseRef.current();
+          },
           MIME_TYPE_GROUPS[mimeType as keyof typeof MIME_TYPE_GROUPS],
           mimeType === "folder"
         );
@@ -80,7 +99,7 @@ const useGooglePicker = ({ showPicker, onPick, onClose, mimeType }: params) => {
 
       func();
     });
-  }, [showPicker, status, data]);
+  }, [showPicker, status, data, mimeType]);
 };
 
 export default useGooglePicker;
