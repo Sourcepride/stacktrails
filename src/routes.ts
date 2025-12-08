@@ -144,4 +144,13 @@ export class BackendRoutes {
   static EXPLORE = "/courses/explore";
   static TAGS = "/courses/tags";
   static WS_SHORT_LIVED = "/auth/ws-shortlived";
+  static GET_ENROLLED_USERS = (course_id: string) =>
+    `/courses/${course_id}/enrolled`;
+  static CHAT = "/chat";
+  static CHAT_INVITE = "/chat/invite";
+  static LIST_CHATS = "/chat";
+  static LIST_CHAT_MEMBERS = (chat_id: string) => `/chat/${chat_id}/members`;
+  static GET_CHAT_MESSAGES = (chat_id: string) => `/chat/${chat_id}/messages`;
+  static MARK_CHAT_AS_READ = (chat_id: string) =>
+    `/chat/${chat_id}/mark-all-as-read`;
 }

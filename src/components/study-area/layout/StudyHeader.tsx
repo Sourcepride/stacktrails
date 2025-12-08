@@ -1,5 +1,6 @@
 "use client";
 
+import CreateStudyGroup from "@/components/study-area/layout/CreateStudyGroup";
 import { Link } from "@/i18n/navigation";
 import { appToast } from "@/lib/appToast";
 import { PublicRoutes } from "@/routes";
@@ -16,6 +17,7 @@ import { FaRegShareSquare } from "@react-icons/all-files/fa/FaRegShareSquare";
 import { FaFireFlameCurved } from "@react-icons/all-files/fa6/FaFireFlameCurved";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState } from "react";
 
 function getBgColor() {
   return ["primary", "secondary", "accentColor"][Math.floor(Math.random() * 3)];
@@ -31,6 +33,7 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({
   enrollment,
   progress,
 }) => {
+  const [showModal, setShowModal] = useState(false);
   const t = useTranslations();
 
   const handleShareClick = async () => {
@@ -102,10 +105,21 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({
         >
           <FaRegShareSquare size={18} />
         </div>
-        <Button title="create study group" className="!capitalize" size="small">
+        <Button
+          title="create study group"
+          className="!capitalize"
+          size="small"
+          onClick={() => setShowModal(true)}
+        >
           Create Group
         </Button>
       </div>
+      {showModal && (
+        <CreateStudyGroup
+          onClose={() => setShowModal(false)}
+          courseId={course.id}
+        />
+      )}
     </header>
   );
 };

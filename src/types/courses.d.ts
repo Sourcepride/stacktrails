@@ -292,6 +292,7 @@ type Progressdata = {
 };
 
 type CourseEnrollment = {
+  account: AccountRead;
   status: string;
   id: string;
   account_id: string;

@@ -3,9 +3,9 @@
 import LoadingComponent from "@/common/utils/LoadingComponent";
 import ClientFooter from "@/components/layout/ClientFooter";
 import ContentArea from "@/components/study-area/ContentArea";
+import StudyTabs from "@/components/study-area/StudyTabs";
 import CourseStructureNav from "@/components/study-area/layout/CourseStructureNav";
 import StudyHeader from "@/components/study-area/layout/StudyHeader";
-import StudyTabs from "@/components/study-area/StudyTabs";
 import { useWindowWidth } from "@/hooks/useWindowWidth";
 import { appToast } from "@/lib/appToast";
 import appAxios from "@/lib/axiosClient";
@@ -17,7 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { use, useEffect, useRef, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import useFullCourseQuery from "../../../../create/course/useFetchFullCourse";
 import useFetchCourseEnrolment from "../useFetchCourseEnrolment";
 import useFetchCourseProgress from "../useFetchCourseProgress";
@@ -28,7 +28,6 @@ export default function Page({
   params: Promise<{ slug_id: string; module_id: string }>;
 }) {
   const { slug_id, module_id } = use(params);
-  // const firstModuleIdRef = useRef<string>(null);
   const [moduleId, setModuleId] = useState<string>(module_id);
   const [navCollapsed, setNavCollapsed] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,6 +59,19 @@ export default function Page({
 
   const queryClient = useQueryClient();
 
+  // Sync moduleId with URL params when it changes
+  useEffect(() => {
+    if (module_id !== moduleId) {
+      setModuleId(module_id);
+    }
+  }, [module_id, moduleId]);
+
+  // Memoize query keys array to avoid recreation on every render
+  const queryKeysToInvalidate = useMemo(
+    () => [courseQueryKey, progressQueryKey, enrollmentQueryKey],
+    [courseQueryKey, progressQueryKey, enrollmentQueryKey]
+  );
+
   const { status: moduleStatus, data: moduleData } = useQuery({
     queryKey: [cacheKeys.MODULE_DETAIL_PAGE, moduleId, user?.id],
     queryFn: async (): Promise<FullModule> => {
@@ -69,17 +81,20 @@ export default function Page({
 
       return res.data;
     },
+    enabled: !!moduleId && !!user?.id,
   });
+
+  const invalidateQueries = () => {
+    queryKeysToInvalidate.forEach((key) => {
+      queryClient.invalidateQueries({ queryKey: key });
+    });
+  };
 
   const { mutate: toggleCompleted } = useMutation({
     mutationFn: async (data: { module_id: string; status: boolean }) => {
       return await appAxios.post(BackendRoutes.TOGGLE_MODULE_COMPLETED, data);
     },
-    onSuccess() {
-      [courseQueryKey, progressQueryKey, enrollmentQueryKey].forEach((k) => {
-        queryClient.invalidateQueries({ queryKey: k });
-      });
-    },
+    onSuccess: invalidateQueries,
     onError(_, variables) {
       appToast.Error(
         t("ERROR_TOGGLING_COMPLETED", {
@@ -88,15 +103,12 @@ export default function Page({
       );
     },
   });
+
   const { mutate: incrementProgress } = useMutation({
     mutationFn: async (data: { module_id: string }) => {
       return await appAxios.post(BackendRoutes.INCREMENT_PROGRESS, data);
     },
-    onSuccess() {
-      [courseQueryKey, progressQueryKey, enrollmentQueryKey].forEach((k) =>
-        queryClient.invalidateQueries({ queryKey: k })
-      );
-    },
+    onSuccess: invalidateQueries,
     onError() {
       appToast.Error(t("INCREMENT_ERROR"));
     },
@@ -166,14 +178,18 @@ export default function Page({
 
   const errorStatus = (error as AxiosError)?.response?.status;
 
-  const marginStyle = {
-    marginRight:
-      windowsWidth >= 1024 && !navCollapsed
-        ? windowsWidth >= 1280
-          ? "400px"
-          : "300px"
-        : "0px",
-  };
+  // Memoize marginStyle to avoid recalculation on every render
+  const marginStyle = useMemo(
+    () => ({
+      marginRight:
+        windowsWidth >= 1024 && !navCollapsed
+          ? windowsWidth >= 1280
+            ? "400px"
+            : "300px"
+          : "0px",
+    }),
+    [windowsWidth, navCollapsed]
+  );
 
   return (
     <div>
@@ -279,6 +295,7 @@ export default function Page({
                 <CourseStructureNav
                   sections={course.sections}
                   currentModule={module}
+                  courseId={course.id}
                   setCurrentModuleId={handleModuleSelect}
                   onClose={() => setNavCollapsed(!navCollapsed)}
                   progress={progress}

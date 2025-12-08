@@ -12,6 +12,7 @@ type CourseStructureNavProps = {
   sections: FullSection[];
   progress?: CourseProgress;
   currentModule: FullModule;
+  courseId: string;
   setCurrentModuleId: (id: string) => void;
   onClose: () => void;
   toggleCompleted: toggleCompletedType;
@@ -29,6 +30,7 @@ const CourseStructureNav: React.FC<CourseStructureNavProps> = ({
   currentModule,
   setCurrentModuleId,
   progress,
+  courseId,
   onClose,
   toggleCompleted,
 }) => {
@@ -40,7 +42,7 @@ const CourseStructureNav: React.FC<CourseStructureNavProps> = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <div className="sticky flex items-center gap-4  top-0 left-0 h-12 w-full bg-white py-2 px-4 z-10">
         <Tabs
           value={value}
@@ -66,8 +68,8 @@ const CourseStructureNav: React.FC<CourseStructureNavProps> = ({
           <IoClose size={20} />
         </button>
       </div>
-      <div hidden={value === 0}>
-        <CourseChat courseId={""} />
+      <div hidden={value === 0} className="h-[calc(100%-3rem)]">
+        <CourseChat courseId={courseId} />
       </div>
       <div hidden={value === 1}>
         <CourseNav
