@@ -1,7 +1,8 @@
+import { useChatContext } from "@/components/chats/context/ChatContext";
 import ChatHeader from "@/components/chats/fragments/ChatHeader";
+import ScrollToBottomButton from "@/components/chats/fragments/ScrollToBottomButton";
 import ChatInputBox from "@/components/chats/fragments/input/ChatInputBox";
 import Message from "@/components/chats/fragments/message/Message";
-import ScrollToBottomButton from "@/components/chats/fragments/ScrollToBottomButton";
 import { useChatMessagesWebSocket } from "@/components/chats/hooks/useChatMessagesWebSocket";
 import { useScrollPosition } from "@/components/chats/hooks/useScrollPosition";
 import appAxios from "@/lib/axiosClient";
@@ -23,6 +24,7 @@ type NewerMessagesInfo = {
 
 export default function ChatMain({ chat, clearCurrentChat }: ChatMainProps) {
   const { user } = useAppStore((state) => state);
+  const { updateChatStats } = useChatContext();
   const [messages, setMessages] = useState<ChatMessageRead[]>([]);
   const [hasNewerMessages, setHasNewerMessages] =
     useState<NewerMessagesInfo | null>(null);
@@ -51,6 +53,12 @@ export default function ChatMain({ chat, clearCurrentChat }: ChatMainProps) {
     try {
       await appAxios.patch(BackendRoutes.MARK_CHAT_AS_READ(chat.id));
       console.log("[ChatMain] Marked all messages as read");
+
+      // Update local chat stats immediately for instant UI feedback
+      updateChatStats(chat.id, {
+        unread_count: 0,
+        has_reply: false,
+      });
     } catch (error) {
       console.error("[ChatMain] Error marking messages as read:", error);
     }
@@ -127,7 +135,12 @@ export default function ChatMain({ chat, clearCurrentChat }: ChatMainProps) {
           })
         );
       },
-      onStatUpdated: (msg: ChatStatRead) => {},
+      onStatUpdated: (msg: ChatStatRead) => {
+        updateChatStats(msg.chat_id, {
+          unread_count: msg.unread_count,
+          has_reply: msg.has_reply,
+        });
+      },
     }),
     []
   );

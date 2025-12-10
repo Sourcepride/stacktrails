@@ -1,17 +1,11 @@
 import LoadingComponent from "@/common/utils/LoadingComponent";
+import { useChatContext } from "@/components/chats/context/ChatContext";
 import { useChatsSyncWebSocket } from "@/components/chats/hooks/useChatsSyncWebSocket";
 import { deBounce } from "@/lib/debounce";
 import { Skeleton } from "@mui/material";
 import { IoSearch } from "@react-icons/all-files/io5/IoSearch";
 import { InfiniteData } from "@tanstack/react-query";
-import {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef } from "react";
 import ChatLog from "./fragments/ChatLog";
 
 type ChatLogsPanelProps = {
@@ -42,16 +36,9 @@ export default function ChatLogsPanel({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Store chat list data locally so we can update it
-  const [localChats, setLocalChats] = useState<ChatAndUnReadCount[]>([]);
-
-  // Sync prop data with local state
-  useEffect(() => {
-    if (data?.pages) {
-      const allChats = data.pages.flatMap((page) => page.items);
-      setLocalChats(allChats);
-    }
-  }, [data]);
+  // Get chat state from context
+  const { localChats, updateChatStats, addNewChat, updateChat } =
+    useChatContext();
 
   // Debounced search handler - memoized to prevent re-renders
   const debouncedSearch = useMemo(
@@ -66,17 +53,8 @@ export default function ChatLogsPanel({
   const chatSyncHandlers = useMemo(
     () => ({
       onChatCreated: (newChat: ChatRead) => {
-        // console.log("[ChatLogsPanel] Chat created:", newChat);
-        // // Add new chat to the top of the list
-        // setLocalChats((prev) => [
-        //   {
-        //     chat: newChat,
-        //     unread_count: 0,
-        //     has_reply: false,
-        //     last_message: null,
-        //   },
-        //   ...prev,
-        // ]);
+        console.log("[ChatLogsPanel] Chat created:", newChat);
+        addNewChat(newChat);
       },
       onAccept: (data: any) => {
         console.log("[ChatLogsPanel] Chat accepted:", data);
@@ -84,34 +62,17 @@ export default function ChatLogsPanel({
       },
       onChatUpdated: (updatedChat: ChatRead) => {
         console.log("[ChatLogsPanel] Chat updated:", updatedChat);
-        // Update chat in the list
-        setLocalChats((prev) =>
-          prev.map((item) =>
-            item.chat.id === updatedChat.id
-              ? { ...item, chat: updatedChat }
-              : item
-          )
-        );
+        updateChat(updatedChat);
       },
       onStatUpdated: (statData: ChatStatRead) => {
         console.log("[ChatLogsPanel] Stats updated:", statData);
-
-        // Update unread count and mention status for the chat
-        setLocalChats((prev) =>
-          prev.map((item) => {
-            if (item.chat.id === statData.chat_id) {
-              return {
-                ...item,
-                unread_count: statData.unread_count ?? item.unread_count,
-                has_reply: statData.has_reply ?? item.has_reply,
-              };
-            }
-            return item;
-          })
-        );
+        updateChatStats(statData.chat_id, {
+          unread_count: statData.unread_count,
+          has_reply: statData.has_reply,
+        });
       },
     }),
-    [] // Empty deps = stable reference, add deps if handlers need props/state
+    [addNewChat, updateChat, updateChatStats]
   );
 
   const { isConnected, subscribe, unsubscribe } = useChatsSyncWebSocket({
@@ -221,27 +182,27 @@ export default function ChatLogsPanel({
           }
         >
           {() =>
-            localChats.map(({ chat, has_reply, unread_count }) => {
-              const metadata = {
-                unreadCount: unread_count || 0,
-                hasReply: has_reply || false,
-                lastMessage: chat.last_message_at
-                  ? "Last message"
-                  : "No messages yet",
-              };
+            localChats.map(
+              ({ chat, has_reply, unread_count, last_message }) => {
+                const metadata = {
+                  unreadCount: unread_count || 0,
+                  hasReply: has_reply || false,
+                  lastMessage: last_message?.content || "No messages yet",
+                };
 
-              return (
-                <ChatLog
-                  key={chat.id}
-                  data={chat}
-                  unreadCount={metadata.unreadCount}
-                  hasReply={metadata.hasReply}
-                  isActive={activeChatId === chat.id}
-                  lastMessage={metadata.lastMessage}
-                  onClick={() => setActiveChat(chat)}
-                />
-              );
-            })
+                return (
+                  <ChatLog
+                    key={chat.id}
+                    data={chat}
+                    unreadCount={metadata.unreadCount}
+                    hasReply={metadata.hasReply}
+                    isActive={activeChatId === chat.id}
+                    lastMessage={metadata.lastMessage}
+                    onClick={() => setActiveChat(chat)}
+                  />
+                );
+              }
+            )
           }
         </LoadingComponent>
 

@@ -193,6 +193,7 @@ export function useChatMessagesWebSocket({
               });
               break;
             case "chat.stat":
+              console.log("+++++++++++++++++++=", msg.data);
               currentHandlers.onStatUpdated?.(msg.data);
               break;
             default:

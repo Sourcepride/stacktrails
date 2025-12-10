@@ -2,6 +2,7 @@
 
 import ChatLogsPanel from "@/components/chats/ChatLogsPanel";
 import ChatMain from "@/components/chats/ChatMain";
+import { ChatProvider } from "@/components/chats/context/ChatContext";
 import appAxios from "@/lib/axiosClient";
 import { cacheKeys } from "@/lib/cacheKeys";
 import { BackendRoutes } from "@/routes";
@@ -49,33 +50,35 @@ const CourseChat: React.FC<CourseChatProps> = ({ courseId }) => {
   });
 
   return (
-    <section className="border border-gray-300 h-full">
-      {!activeChat && (
-        <ChatLogsPanel
-          data={users_chats}
-          isLoadingChats={isLoadingChats}
-          isFetchingChats={isFetchingChats}
-          fetchChatsNextPage={fetchChatsNextPage}
-          error={error}
-          setActiveChat={setActiveChat}
-          activeChatId={null}
-          search={search}
-          setSearch={setSearch}
-          hasNextPage={hasNextPage}
-        />
-      )}
-      {activeChat && (
-        <ChatMain
-          chat={activeChat}
-          clearCurrentChat={() => {
-            setActiveChat(null);
-            queryClient.invalidateQueries({
-              queryKey: [cacheKeys.USER_CHATS, user?.id],
-            });
-          }}
-        />
-      )}
-    </section>
+    <ChatProvider initialData={users_chats}>
+      <section className="border border-gray-300 h-full">
+        {!activeChat && (
+          <ChatLogsPanel
+            data={users_chats}
+            isLoadingChats={isLoadingChats}
+            isFetchingChats={isFetchingChats}
+            fetchChatsNextPage={fetchChatsNextPage}
+            error={error}
+            setActiveChat={setActiveChat}
+            activeChatId={null}
+            search={search}
+            setSearch={setSearch}
+            hasNextPage={hasNextPage}
+          />
+        )}
+        {activeChat && (
+          <ChatMain
+            chat={activeChat}
+            clearCurrentChat={() => {
+              setActiveChat(null);
+              queryClient.invalidateQueries({
+                queryKey: [cacheKeys.USER_CHATS, user?.id],
+              });
+            }}
+          />
+        )}
+      </section>
+    </ChatProvider>
   );
 };
 
