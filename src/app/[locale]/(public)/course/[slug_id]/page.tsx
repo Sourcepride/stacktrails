@@ -41,13 +41,30 @@ Promise<Metadata> {
     process.env.NEXT_PUBLIC_API_URL + BackendRoutes.COURSE_DETAIL(slug)
   ).then((res) => res.json());
 
-  // Process image URL through proxy and ensure it's absolute for OpenGraph
-  const processedImage = getImageProxyUrl(post.image);
-  const ogImage = processedImage
-    ? processedImage.startsWith("http")
-      ? processedImage
-      : `${process.env.NEXT_PUBLIC_SITE_URL}${processedImage}`
-    : `${process.env.NEXT_PUBLIC_SITE_URL}/placeholder.png`;
+  // Process image URL for OpenGraph/Twitter cards
+  // Use Next.js API route for proper headers (especially for Google Drive and Dropbox images)
+  let ogImage: string;
+  
+  if (!post.image) {
+    ogImage = `${process.env.NEXT_PUBLIC_SITE_URL}/placeholder.png`;
+  } else {
+    
+    const isGoogleDrive = post.image.includes("drive.google.com") || 
+                        post.image.includes("googleusercontent.com");
+    const isDropbox = post.image.includes("dropbox.com");
+    
+    if (isGoogleDrive || isDropbox) {
+      
+      const encodedUrl = encodeURIComponent(post.image);
+      ogImage = `${process.env.NEXT_PUBLIC_SITE_URL}/api/og-image?url=${encodedUrl}`;
+    } else {
+      
+      const processedImage = getImageProxyUrl(post.image);
+      ogImage = processedImage.startsWith("http")
+        ? processedImage
+        : `${process.env.NEXT_PUBLIC_SITE_URL}${processedImage}`;
+    }
+  }
 
   return {
     title: post.title,
