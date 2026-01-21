@@ -1,9 +1,7 @@
 "use client";
 
 import { IconButton } from "@mui/material";
-import { FaMicrophone } from "@react-icons/all-files/fa/FaMicrophone";
 import { FaPaperPlane } from "@react-icons/all-files/fa/FaPaperPlane";
-import { FaPaperclip } from "@react-icons/all-files/fa/FaPaperclip";
 import { useEffect, useRef, useState } from "react";
 
 type ChatInputBoxProps = {
@@ -72,14 +70,14 @@ export default function ChatInputBox({
     <div className="border-t  border-gray-200 bg-white px-1 py-3">
       <div className="flex relative items-center gap-2">
         {/* Attachment Button */}
-        <IconButton
+        {/* <IconButton
           onClick={onAttach}
           disabled={disabled}
-          className="!absolute top-1/2 -translate-y-1/2 !flex-shrink-0 !text-gray-600 hover:!text-gray-900 hover:!bg-gray-100 "
+          className=" !absolute top-1/2 -translate-y-1/2 !flex-shrink-0 !text-gray-600 hover:!text-gray-900 hover:!bg-gray-100 "
           aria-label="Attach file"
         >
           <FaPaperclip className="w-4.5 h-4.5" />
-        </IconButton>
+        </IconButton> */}
 
         {/* Text Input Area */}
         <div className="flex-1 relative">
@@ -100,9 +98,9 @@ export default function ChatInputBox({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="items-center gap-1 flex-shrink-0">
           {/* Microphone Button - Show when no message */}
-          {!hasMessage && (
+          {/* {!hasMessage && (
             <IconButton
               onClick={onVoiceRecord}
               disabled={disabled}
@@ -111,10 +109,10 @@ export default function ChatInputBox({
             >
               <FaMicrophone className="w-5 h-5" />
             </IconButton>
-          )}
+          )} */}
 
           {/* Send Button - Show when there's a message */}
-          {hasMessage && (
+          {/* {hasMessage && (
             <IconButton
               onClick={handleSend}
               disabled={disabled || !hasMessage}
@@ -123,7 +121,16 @@ export default function ChatInputBox({
             >
               <FaPaperPlane className="w-5 h-5" />
             </IconButton>
-          )}
+          )} */}
+
+          <IconButton
+            onClick={handleSend}
+            disabled={disabled || !hasMessage}
+            className="!bg-primary !text-white hover:!bg-primary/90 disabled:!bg-gray-300 disabled:!text-gray-500"
+            aria-label="Send message"
+          >
+            <FaPaperPlane className="w-5 h-5" />
+          </IconButton>
         </div>
       </div>
     </div>

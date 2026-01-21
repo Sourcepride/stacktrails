@@ -13,9 +13,10 @@ import {
   getCourseDetailFn,
   getMinimalCourseContent,
 } from "@/lib/http/coursesFetchFunc";
+import { getImageProxyUrl } from "@/lib/utils";
 import { BackendRoutes } from "@/routes";
 import { Skeleton } from "@mui/material";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -23,6 +24,7 @@ import { PropsWithChildren, Suspense } from "react";
 
 type props = {
   params: Promise<{ slug_id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export const experimental_ppr = true;
@@ -31,15 +33,21 @@ export async function generateMetadata({
   params,
 }: props): // parent: ResolvingMetadata
 Promise<Metadata> {
-  const slug = (await params).slug_id;
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug_id;
 
   // fetch post information
   const post: Course = await fetch(
     process.env.NEXT_PUBLIC_API_URL + BackendRoutes.COURSE_DETAIL(slug)
   ).then((res) => res.json());
 
-  const ogImage =
-    post.image ?? `${process.env.NEXT_PUBLIC_SITE_URL}/placeholder.png`;
+  // Process image URL through proxy and ensure it's absolute for OpenGraph
+  const processedImage = getImageProxyUrl(post.image);
+  const ogImage = processedImage
+    ? processedImage.startsWith("http")
+      ? processedImage
+      : `${process.env.NEXT_PUBLIC_SITE_URL}${processedImage}`
+    : `${process.env.NEXT_PUBLIC_SITE_URL}/placeholder.png`;
 
   return {
     title: post.title,
@@ -70,7 +78,8 @@ Promise<Metadata> {
 }
 
 export default async function Page({ params }: props) {
-  const { slug_id: slug } = await params;
+  const resolvedParams = await params;
+  const { slug_id: slug } = resolvedParams;
   const t = await getTranslations();
 
   const queryClient = getQueryClient();
@@ -95,8 +104,11 @@ export default async function Page({ params }: props) {
   return (
     <main className="">
       <section className={"w-full   bg-[#04111F] text-[#fffdfd]"}>
-        <CenterOnLgScreen props={{ component: "div" }} className="">
-          <ContentContainer>
+        <CenterOnLgScreen
+          props={{ component: "div" }}
+          className="flex flex-col"
+        >
+          <ContentContainer className="order-2 xl:order-[none]">
             <CourseDetailHeader data={data} t={t} />
           </ContentContainer>
 
@@ -163,9 +175,12 @@ export default async function Page({ params }: props) {
   );
 }
 
-function ContentContainer({ children }: PropsWithChildren) {
+function ContentContainer({
+  children,
+  className,
+}: PropsWithChildren & { className?: string }) {
   return (
-    <div className="flex justify-center ">
+    <div className={`flex justify-center ${className}`}>
       <div className={`w-full max-w-[80ch]`}>{children}</div>
       <div
         aria-hidden

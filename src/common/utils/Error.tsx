@@ -37,7 +37,7 @@ export default function ErrorDisplay({
       </div>
       <h3 className="text-lg font-semibold text-gray-600 mb-2">{title}</h3>
       {message && (
-        <p className="text-sm text-gray-500 text-center max-w-md">{message}</p>
+        <div className="text-sm text-gray-500 text-center max-w-md">{message}</div>
       )}
     </div>
   );

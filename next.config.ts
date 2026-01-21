@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    dangerouslyAllowLocalIP: IsDEV,
     remotePatterns: [
       {
         protocol: IsDEV ? "http" : "https",

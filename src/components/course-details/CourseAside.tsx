@@ -47,7 +47,7 @@ const CourseAside: React.FC<CourseAsideProps> = ({ isPreview }) => {
 
   const [isSticky, setIsSticky] = useState(false);
   const [imageSrc, setImgSrc] = useState(
-    getImageProxyUrl(data.image) || "/1.png"
+    getImageProxyUrl(data.image) || "/placeholder.png"
   );
 
   useEffect(() => {
@@ -73,9 +73,9 @@ const CourseAside: React.FC<CourseAsideProps> = ({ isPreview }) => {
 
   return (
     <div
-      className={`fixed hidden w-[400px]  ${
+      className={`${
         isSticky ? "top-4" : "top-[calc(70px+4rem)]"
-      } right-[50%] translate-x-[148%] text-black bg-white rounded-lg py-2 [box-shadow:0px_4px_15px_4px_rgba(0,0,0,0.2)] group transition-all duration-300 xl:block`}
+      } right-[50%]   rounded-lg py-2 group transition-all duration-300 xl:text-black xl:bg-white xl:w-[400px]  xl:[box-shadow:0px_4px_15px_4px_rgba(0,0,0,0.2)] xl:translate-x-[148%] xl:fixed xl:block`}
     >
       <div className="relative w-full aspect-video overflow-hidden ">
         <Image
@@ -85,7 +85,7 @@ const CourseAside: React.FC<CourseAsideProps> = ({ isPreview }) => {
           sizes="(max-width: 768px) 100vw, 50vw"
           style={{ objectFit: "cover" }}
           className="block"
-          onError={() => setImgSrc("/1.png")}
+          onError={() => setImgSrc("/placeholder.png")}
         />
       </div>
 
@@ -97,12 +97,12 @@ const CourseAside: React.FC<CourseAsideProps> = ({ isPreview }) => {
           <EnrollCTAButton course_id={data.id} slug={slug_id} />
         )}
 
-        <div className="flex items-center gap-1">
+        <div className="hidden  items-center gap-1 xl:flex">
           <StarRating rating={data.average_rating} size="medium" />
           <span className="font-medium">{data.average_rating}</span>
         </div>
 
-        <div className="flex text-sm justify-between items-center">
+        <div className="hidden text-sm justify-between items-center xl:flex">
           <IconAndText
             icon={
               <IconButton aria-label="Enrolled" size="small" color="inherit">
@@ -126,13 +126,13 @@ const CourseAside: React.FC<CourseAsideProps> = ({ isPreview }) => {
             }
           />
         </div>
-        <div>
+        <div className="hidden xl:block">
           <div className="text-center text-sm">{t("LIFETIME_ACCESS")}</div>
           <div className="text-center text-sm">{t("SHARE_ON")}</div>
         </div>
 
         {/* Social Share Icons */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="hidden items-center justify-center gap-4 xl:block">
           <IconButton
             size="medium"
             className="hover:!bg-gray-100"

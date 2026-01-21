@@ -1,6 +1,5 @@
 import LoadingComponent from "@/common/utils/LoadingComponent";
 import { useChatContext } from "@/components/chats/context/ChatContext";
-import { useChatsSyncWebSocket } from "@/components/chats/hooks/useChatsSyncWebSocket";
 import { deBounce } from "@/lib/debounce";
 import { Skeleton } from "@mui/material";
 import { IoSearch } from "@react-icons/all-files/io5/IoSearch";
@@ -19,6 +18,10 @@ type ChatLogsPanelProps = {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
   hasNextPage?: boolean;
+  // WebSocket props passed from parent
+  isConnected: boolean;
+  subscribe: (chatId: string) => boolean;
+  unsubscribe: (chatId: string) => boolean;
 };
 
 export default function ChatLogsPanel({
@@ -32,13 +35,16 @@ export default function ChatLogsPanel({
   search,
   setSearch,
   hasNextPage = false,
+  // Receive WebSocket props from parent
+  isConnected,
+  subscribe,
+  unsubscribe,
 }: ChatLogsPanelProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Get chat state from context
-  const { localChats, updateChatStats, addNewChat, updateChat } =
-    useChatContext();
+  // Get chat state from context (only need localChats for subscriptions)
+  const { localChats } = useChatContext();
 
   // Debounced search handler - memoized to prevent re-renders
   const debouncedSearch = useMemo(
@@ -48,36 +54,6 @@ export default function ChatLogsPanel({
       }, 500),
     [setSearch]
   );
-
-  // Memoize handlers to prevent unnecessary re-renders
-  const chatSyncHandlers = useMemo(
-    () => ({
-      onChatCreated: (newChat: ChatRead) => {
-        console.log("[ChatLogsPanel] Chat created:", newChat);
-        addNewChat(newChat);
-      },
-      onAccept: (data: any) => {
-        console.log("[ChatLogsPanel] Chat accepted:", data);
-        // TODO: Handle chat acceptance
-      },
-      onChatUpdated: (updatedChat: ChatRead) => {
-        console.log("[ChatLogsPanel] Chat updated:", updatedChat);
-        updateChat(updatedChat);
-      },
-      onStatUpdated: (statData: ChatStatRead) => {
-        console.log("[ChatLogsPanel] Stats updated:", statData);
-        updateChatStats(statData.chat_id, {
-          unread_count: statData.unread_count,
-          has_reply: statData.has_reply,
-        });
-      },
-    }),
-    [addNewChat, updateChat, updateChatStats]
-  );
-
-  const { isConnected, subscribe, unsubscribe } = useChatsSyncWebSocket({
-    handlers: chatSyncHandlers,
-  });
 
   useEffect(() => {
     // Only subscribe when WebSocket is actually connected

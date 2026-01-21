@@ -14,9 +14,17 @@ export default function CanvasLayer({
   const renderTask = useRef<pdfjsLib.RenderTask | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const renderPage = async () => {
-      const canvas = canvasRef.current!;
-      const ctx = canvas.getContext("2d")!;
+      if (!isMounted) return;
+
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
       const outputScale = window.devicePixelRatio || 1;
 
       canvas.width = Math.floor(viewport.width * outputScale);
@@ -27,7 +35,13 @@ export default function CanvasLayer({
       const transform =
         outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
 
-      if (renderTask.current) renderTask.current.cancel();
+      // Cancel any existing render task
+      if (renderTask.current) {
+        renderTask.current.cancel();
+        renderTask.current = null;
+      }
+
+      if (!isMounted) return;
 
       renderTask.current = page.render({
         canvasContext: ctx,
@@ -36,14 +50,34 @@ export default function CanvasLayer({
         canvas,
       });
 
-      await renderTask.current.promise;
+      try {
+        await renderTask.current.promise;
+      } catch (error: any) {
+        // Handle RenderingCancelledException gracefully
+        // This is expected when the component unmounts or page changes
+        if (
+          error?.name === "RenderingCancelledException" ||
+          error?.message?.includes("Rendering cancelled")
+        ) {
+          // Silently ignore cancellation - this is expected behavior
+          return;
+        }
+        // Re-throw other errors
+        throw error;
+      } finally {
+        if (isMounted) {
+          renderTask.current = null;
+        }
+      }
     };
 
     renderPage();
 
     return () => {
+      isMounted = false;
       if (renderTask.current) {
         renderTask.current.cancel();
+        renderTask.current = null;
       }
     };
   }, [page, viewport]);

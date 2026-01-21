@@ -20,8 +20,7 @@ export default function Error({
       <ErrorDisplay
         title="Something went wrong!"
         message={
-          <div>
-            <p></p>
+          <div className="flex flex-col items-center gap-4">
             <Button disableElevation size="large" onClick={() => reset()}>
               Try again
             </Button>
