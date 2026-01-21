@@ -155,13 +155,13 @@ export default function Page() {
             onChange={(e) => updateParams("level", e.target.value)}
           >
             <MenuItem value="">{t("DIFFICULTY_LEVEL.ALL")}</MenuItem>
-            <MenuItem value="BEGINNER">
+            <MenuItem value="beginner">
               {t("DIFFICULTY_LEVEL.BEGINNER")}
             </MenuItem>
-            <MenuItem value="INTERMEDIATE">
+            <MenuItem value="intermediate">
               {t("DIFFICULTY_LEVEL.INTERMEDIATE")}
             </MenuItem>
-            <MenuItem value="ADVANCED">
+            <MenuItem value="advanced">
               {t("DIFFICULTY_LEVEL.ADVANCED")}
             </MenuItem>
           </Select>

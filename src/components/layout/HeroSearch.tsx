@@ -12,6 +12,19 @@ const HeroSearch: React.FC<HeroSearchProps> = ({}) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const handleSearch = () => {
+    if (searchRef.current?.value) {
+      router.push(`${PublicRoutes.COURSES}?q=${searchRef.current.value}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
   return (
     <div className="relative">
       <input
@@ -19,14 +32,11 @@ const HeroSearch: React.FC<HeroSearchProps> = ({}) => {
         className="rounded-2xl p-4 h-full  w-full bg-gray-200 focus:outline-secondary"
         placeholder={t("SEARCH")}
         ref={searchRef}
+        onKeyDown={handleKeyDown}
       />
       <button
         type="button"
-        onClick={() => {
-          if (searchRef.current?.value) {
-            router.push(`${PublicRoutes.COURSES}?q=${searchRef.current.value}`);
-          }
-        }}
+        onClick={handleSearch}
         className="absolute cursor-pointer bg-primary p-2 rounded-xl  top-1/2 -translate-y-1/2 right-2"
       >
         <IoSearch size={"20px"} color="white" />

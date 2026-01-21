@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+
+
 /**
  * API route to proxy images for OpenGraph/Twitter cards
  * This ensures proper headers are set for social media crawlers
