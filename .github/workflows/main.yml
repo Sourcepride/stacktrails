@@ -100,7 +100,7 @@ jobs:
             rm next-build.tar.gz
 
             echo "♻️  Restarting PM2..."
-            pm2 reload stacktrails || pm2 start pnpm --name stacktrails -- start
+            pm2 reload stacktrails || pm2 start npm --name stacktrails -- start
             pm2 save
 
             echo "✅ Deployment complete!"
